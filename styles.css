@@ -1,0 +1,168 @@
+<style>
+
+  body {
+    margin: 0; /* Eliminar márgenes predeterminados */
+    padding: 0; /* Eliminar relleno predeterminado */
+    width: 100vw; /* Establecer el ancho al 100% del viewport width */
+    height: 100vh; /* Establecer la altura al 100% del viewport height */
+    overflow: hidden; /* Evitar desbordamiento horizontal o vertical */
+
+  }
+
+
+  .titulo {
+    font-family: Arial, sans-serif; /* Tipo de fuente legible */
+    font-size: 3.6rem; /* Tamaño grande para hacerlo notorio */
+    font-weight: bold; /* Negrita para enfatizar */
+    color: #007bff; /* Color oscuro para contraste */
+    text-align: center; /* Centrar el título */
+    text-transform: uppercase; /* Convertir el texto en mayúsculas */
+    margin: 5rem 5rem 5rem 5rem; /* Espacio superior para separarlo de otros elementos */
+    //animation: cambiaColor 2s infinite alternate; /* Animación */
+    -webkit-text-stroke: 1px #333;
+  }
+
+  .sections-tables {
+    display: flex;
+    width: 100%;
+    height: 80%;
+    padding: 0.5rem 0.5rem;
+    justify-content:center;
+    align-items: center;
+  }
+
+  .specific-table {
+    width: 100%;
+    height: 100%;
+    padding: 4rem 4rem 4rem 4rem;
+    overflow-x: auto; /* Hace que la tabla sea desplazable horizontalmente si es necesario */
+    overflow-y: auto; /* Hace que la tabla sea desplazable verticalmente si es necesario */
+  }
+
+  table {
+    font-size: 0.8rem;
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .bi-pencil-square {
+    color:#26D12D;
+  }
+
+  .div-btn-primary {
+    display: flex;
+    width: 100%;
+    justify-content:center;
+    align-items: center;
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:center;
+    align-items: center;
+    min-height: 150wh;
+    margin: 1rem 1rem 3rem 1rem;
+  }
+
+  h2 {
+    width: 100%;
+    text-align: center;
+    font-size: 2rem;
+    padding: 0.5rem 0.5rem;
+  }
+
+  .columnas {
+    display: flex;
+    }
+
+  .columnas > div {
+      flex: 1;
+      margin-right: 10px;
+  }
+
+  .columnas > div:last-child {
+      margin-right: 0;
+  }
+
+  .id-field {
+    background-color: #B4B4B4;
+  }
+
+  nav {
+    background-color: #333;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 20px;
+  }
+
+  .logo {
+    font-weight: bold;
+  }
+
+  .nav-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+  }
+
+  .nav-links li {
+    margin-right: 15px;
+    height: 95%
+  }
+
+  .nav-links li:last-child {
+    margin-right: 0;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: #fff;
+  }
+
+  /* Estilos para navbar responsive */
+  .nav-toggle-label {
+    cursor: pointer;
+    display: none; /* Oculta el botón de menú en pantallas grandes */
+  }
+
+  .nav-links {
+    display: flex;
+  }
+
+  /* Estilos para pantallas pequeñas */
+  @media screen and (max-width: 768px) {
+    .nav-links {
+      display: none; /* Oculta los enlaces del navbar en pantallas pequeñas */
+      flex-direction: column;
+      position: absolute;
+      top: 40px;
+      left: 0;
+      width: 100%;
+      background-color: #333;
+    }
+
+    .nav-links li {
+      margin: 0;
+      text-align: center;
+    }
+
+    .nav-toggle-label {
+      display: block; /* Muestra el botón de menú en pantallas pequeñas */
+      font-size: 1.5em;
+      z-index: 2;
+    }
+
+    input[type="checkbox"] {
+      display: none; /* Oculta el checkbox en pantallas pequeñas */
+    }
+
+    input[type="checkbox"]:checked + .nav-links {
+      display: flex; /* Muestra los enlaces del navbar cuando el checkbox está chequeado */
+    }
+  }
+
+</style>
