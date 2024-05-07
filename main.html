@@ -6,487 +6,526 @@
   <title>Telemarketing HNSAS</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.0/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
   <?!= include('styles'); ?>
 </head>
 <body>
-  <header>
-    <nav>
-      <div class="logo"> TELEMARKETING Hamon Nontoa SAS</div>
-      <input type="checkbox" id="nav-toggle">
-      <label for="nav-toggle" class="nav-toggle-label">&#9776;</label>
-      <ul class="nav-links">
-        <li><a href="#" class="btn-main" id="empleadoBtn">Colaboradores</a></li>
-        <li><a href="#" class="btn-main" id="vendedorBtn">Asesores</a></li>
-        <li><a href="#" class="btn-main" id="clienteBtn">Clientes</a></li>
-        <li><a href="#" class="btn-main" id="eventoBtn">Eventos</a></li>
-        <li><a href="#" class="btn-main" id="programaBtn">Programas</a></li>
-        <li><a href="#" class="btn-main" id="ventaBtn">Ventas</a></li>
-      </ul>
+  <header class="header">
+    <div class="logo">HAMON NONTOA SAS</div>
+    <input type="checkbox" id="nav-toggle">
+    <label for="nav-toggle" class="nav-toggle-label">&#9776;</label>
+    <nav class="navbar">
+      <a href="#" class="btn-main" id="empleadoBtn">Colaboradores</a>
+      <a href="#" class="btn-main" id="vendedorBtn">Asesores</a>
+      <a href="#" class="btn-main" id="clienteBtn">Clientes</a>
+      <a href="#" class="btn-main" id="programaBtn">Programas</a>
+      <a href="#" class="btn-main" id="eventoBtn">Eventos</a>
+      <a href="#" class="btn-main" id="ventaBtn">Ventas</a>
     </nav>
   </header>
+  <section id="main-section">
 
-  <section class="sections-tables" id="empleado-section">
-    <h2>Tabla de colaboradores</h2>
-    <div class="div-btn-primary">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModalEmpleado"> + Agregar </button>
-    </div>
-    </div>
-    <div class="specific-table">
+    <section class="sections-tables" id="empleado-section">
+      <h2>Tabla de colaboradores</h2>
+      <!--
+      <div class="div-btn-primary">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModalEmpleado" onclick="btnAgregar('empleado')"> + Agregar </button>
+      </div> -->
         <table id="tabla-empleado" class="display" style="width:100%">
         </table>
-    </div>
-  </section>
+    </section>
 
-  <section class="sections-tables" id="vendedor-section">
-    <h2>Tabla de emprendedores</h2>
-    <div class="div-btn-primary">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModalVendedor"> + Agregar </button>
-    </div>
-    <div class="specific-table">
-      <table id="tabla-vendedor" class="display" style="width:100%">
-      </table>
-    </div>
-  </section>
+    <section class="sections-tables" id="vendedor-section">
+      <h2>Tabla de asesores</h2>
+        <table id="tabla-vendedor" class="display" style="width:100%">
+        </table>
+    </section>
 
-  <section class="sections-tables" id="cliente-section">
-    <h2>Tabla de clientes</h2>
-    <div class="div-btn-primary">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModalCliente"> + Agregar </button>
-    </div>
-    <div class="specific-table">
-      <table id="tabla-cliente" class="display" style="width:100%">
-      </table>
-    </div>
-  </section>
+    <section class="sections-tables" id="cliente-section">
+      <h2>Tabla de clientes</h2>
+        <table id="tabla-cliente" class="display" style="width:100%">
+        </table>
+    </section>
 
-  <section class="sections-tables" id="evento-section">
-    <h2>Tabla de eventos</h2>
-    <div class="div-btn-primary">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModalEvento"> + Agregar </button>
-    </div>
-    <div class="specific-table">
-      <table id="tabla-evento" class="display" style="width:100%">
-      </table>
-    </div>
-  </section>
+    <section class="sections-tables" id="programa-section">
+      <h2>Tabla de programas</h2>
+        <table id="tabla-programa" class="display" style="width:100%">
+        </table>
+    </section>
 
-  <section class="sections-tables" id="programa-section">
-    <h2>Tabla de programas</h2>
-    <div class="div-btn-primary">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModalPrograma"> + Agregar </button>
-    </div>
-    <div class="specific-table">
-      <table id="tabla-programa" class="display" style="width:100%">
-      </table>
-    </div>
-  </section>
-
-  <section class="sections-tables" id="venta-section">
-    <h2>Tabla de ventas</h2>
-    <div class="div-btn-primary">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModalVenta"> + Agregar </button>
-    </div>
-    <div class="specific-table">
-      <table id="tabla-venta" class="display" style="width:100%">
-      </table>
-    </div>
-  </section>
-
-  <!-- Modal Empleado -->
-  <div class="modal fade" id="createModalEmpleado" tabindex="-1" aria-labelledby="createModalEmpleado" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="headerModalEmpleado">Crear/Editar un nuevo Empleado</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <section class="sections-tables" id="evento-section">
+      <h2>Tabla de eventos</h2>
+        <div class="text-center d-none" id="spinner-tabla-evento">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
         </div>
-        <div class="modal-body">
-          <form name="form-crear-empleado" id="id-form-crear-empleado" action="#" method="post">
-            <div class="columnas">
-                <div>
-                    <label for="idPersonaEmpleado">Id Persona:</label><br>
-                    <input type="text" id="idPersonaEmpleado" name="idPersonaEmpleado" class="form-control id-field" value="0" readonly><br>
+        <table id="tabla-evento" class="display" style="width:100%">
+        </table>
+    </section>    
 
-                    <label for="nombreEmpleado">Nombres:</label><br>
-                    <input type="text" id="nombreEmpleado" name="nombreEmpleado" class="form-control" tabindex="1"><br>
+    <section class="sections-tables" id="venta-section">
+      <h2>Tabla de ventas</h2>
+        <table id="tabla-venta" class="display" style="width:100%">
+        </table>
+    </section>
 
-                    <label for="celularEmpleado">Celular:</label><br>
-                    <input type="text" id="celularEmpleado" name="celularEmpleado" class="form-control" tabindex="3"><br>
+    <!-- Modal Empleado -->
+    <div class="modal fade" id="createModalEmpleado" tabindex="-1" aria-labelledby="createModalEmpleado" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="headerModalEmpleado">Crear/Editar un nuevo Empleado</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form name="form-crear-empleado" id="id-form-crear-empleado" action="#" method="post">
+              <div class="columnas">
+                  <div>
+                      <label class="id-label" for="idPersonaEmpleado">Id Persona:</label><br>
+                      <input type="text" id="idPersonaEmpleado" name="idPersonaEmpleado" class="form-control id-field" value="0" readonly><br>
 
-                    <label for="ciudadEmpleado">Ciudad:</label><br>
-                    <input type="text" id="ciudadEmpleado" name="ciudadEmpleado" class="form-control" tabindex="5"><br>
+                      <label for="nombreEmpleado">Nombres:</label><br>
+                      <input type="text" id="nombreEmpleado" name="nombreEmpleado" class="form-control" tabindex="1"><br>
 
-                    <label for="emailEmpleado">Email:</label><br>
-                    <input type="email" id="emailEmpleado" name="emailEmpleado" class="form-control" tabindex="7"><br>
+                      <label for="celularEmpleado">Celular:</label><br>
+                      <input type="text" id="celularEmpleado" name="celularEmpleado" class="form-control" tabindex="3"><br>
 
-                    <label for="epsEmpleado">EPS:</label><br>
-                    <input type="text" id="epsEmpleado" name="epsEmpleado" class="form-control" tabindex="9"><br>
-                </div>
-                <div>
-                    <label for="idEmpleado">Id Empleado:</label><br>
-                    <input type="text" id="idEmpleado" name="idEmpleado" class="form-control id-field" value="0" readonly><br>
+                      <label for="ciudadEmpleado">Ciudad:</label><br>
+                      <input type="text" id="ciudadEmpleado" name="ciudadEmpleado" class="form-control" tabindex="5"><br>
 
-                    <label for="apellidoEmpleado">Apellidos:</label><br>
-                    <input type="text" id="apellidoEmpleado" name="apellidoEmpleado" class="form-control" tabindex="2"><br>
+                      <label for="emailEmpleado">Email:</label><br>
+                      <input type="email" id="emailEmpleado" name="emailEmpleado" class="form-control" tabindex="7"><br>
 
-                    <label for="departamentoEmpleado">Departamento:</label><br>
-                    <input type="text" id="departamentoEmpleado" name="departamentoEmpleado" class="form-control" tabindex="4"><br>
+                      <label for="epsEmpleado">EPS:</label><br>
+                      <input type="text" id="epsEmpleado" name="epsEmpleado" class="form-control" tabindex="9"><br>
+                  </div>
+                  <div>
+                      <label class="id-label" for="idEmpleado">Id Empleado:</label><br>
+                      <input type="text" id="idEmpleado" name="idEmpleado" class="form-control id-field" value="0" readonly><br>
 
-                    <label for="direccionEmpleado">Direccion:</label><br>
-                    <input type="text" id="direccionEmpleado" name="direccionEmpleado" class="form-control" tabindex="6"><br>
+                      <label for="apellidoEmpleado">Apellidos:</label><br>
+                      <input type="text" id="apellidoEmpleado" name="apellidoEmpleado" class="form-control" tabindex="2"><br>
 
-                    <label for="salarioEmpleado">Salario:</label><br>
-                    <input type="text" id="salarioEmpleado" name="salarioEmpleado" class="form-control" tabindex="8"><br>
+                      <label for="departamentoEmpleado">Departamento:</label><br>
+                      <input type="text" id="departamentoEmpleado" name="departamentoEmpleado" class="form-control" tabindex="4"><br>
 
-                    <label for="cargoEmpleado">Cargo:</label><br>
-                    <input type="text" id="cargoEmpleado" name="cargoEmpleado" class="form-control" tabindex="10"><br>
-                </div>
-            </div>
-        </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="11">Cerrar</button>
-          <button type="button" class="btn btn-primary btn-save-record" onclick="enviarFormEmpleado()" id="btnGuardarEmpleado" tabindex="12">Guardar cambios</button>
-          <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingEmpleado" disabled>
-            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-            <span role="status">Actualizando...</span>
-          </button>
+                      <label for="direccionEmpleado">Direccion:</label><br>
+                      <input type="text" id="direccionEmpleado" name="direccionEmpleado" class="form-control" tabindex="6"><br>
+
+                      <label for="salarioEmpleado">Salario:</label><br>
+                      <input type="text" id="salarioEmpleado" name="salarioEmpleado" class="form-control" tabindex="8"><br>
+
+                      <label for="cargoEmpleado">Cargo:</label><br>
+                      <input type="text" id="cargoEmpleado" name="cargoEmpleado" class="form-control" tabindex="10"><br>
+                  </div>
+              </div>
+          </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="11">Cerrar</button>
+            <button type="button" class="btn btn-primary btn-save-record" onclick="enviarFormEmpleado()" id="btnGuardarEmpleado" tabindex="12">Guardar cambios</button>
+            <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingEmpleado" disabled>
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span role="status">Actualizando...</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <!-- Modal Vendedor -->
-  <div class="modal fade" id="createModalVendedor" tabindex="-1" aria-labelledby="createModalVendedor" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="headerModalVendedor">Crear/Editar un nuevo Vendedor</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form name="form-crear-vendedor" id="id-form-crear-vendedor" action="#" method="post">
-            <div class="columnas">
-                <div>
-                    <label for="idPersonaVendedor">Id Persona:</label><br>
-                    <input type="text" id="idPersonaVendedor" name="idPersonaVendedor" class="form-control id-field" value="0" readonly><br>
+    <!-- Modal Vendedor -->
+    <div class="modal fade" id="createModalVendedor" tabindex="-1" aria-labelledby="createModalVendedor" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="headerModalVendedor">Crear/Editar un nuevo Vendedor</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form name="form-crear-vendedor" id="id-form-crear-vendedor" action="#" method="post">
+              <div class="columnas">
+                  <div>
+                      <label class="id-label" for="idPersonaVendedor">Id Persona:</label><br>
+                      <input type="text" id="idPersonaVendedor" name="idPersonaVendedor" class="form-control id-field" value="0" readonly><br>
 
-                    <label for="nombreVendedor">Nombres:</label><br>
-                    <input type="text" id="nombreVendedor" name="nombreVendedor" class="form-control" tabindex="1"><br>
+                      <label for="nombreVendedor">Nombres:</label><br>
+                      <input type="text" id="nombreVendedor" name="nombreVendedor" class="form-control" tabindex="1"><br>
 
-                    <label for="celularVendedor">Celular:</label><br>
-                    <input type="text" id="celularVendedor" name="celularVendedor" class="form-control" tabindex="3"><br>
+                      <label for="celularVendedor">Celular:</label><br>
+                      <input type="text" id="celularVendedor" name="celularVendedor" class="form-control" tabindex="3"><br>
 
-                    <label for="departamentoVendedor">Departamento:</label><br>
-                    <input type="text" id="departamentoVendedor" name="departamentoVendedor" class="form-control" tabindex="5"><br>
+                      <label for="departamentoVendedor">Departamento:</label><br>
+                      <input type="text" id="departamentoVendedor" name="departamentoVendedor" class="form-control" tabindex="5"><br>
 
-                    <label for="ciudadVendedor">Ciudad:</label><br>
-                    <input type="text" id="ciudadVendedor" name="ciudadVendedor" class="form-control" tabindex="7"><br>
+                      <label for="epsVendedor">EPS:</label><br>
+                      <input type="text" id="epsVendedor" name="epsVendedor" class="form-control" tabindex="7"><br>
 
-                    <label for="emailVendedor">Email:</label><br>
-                    <input type="email" id="emailVendedor" name="emailVendedor" class="form-control" tabindex="9"><br>
+                      <label for="metaVendedor">Meta anual:</label><br>
+                      <input type="text" id="metaVendedor" name="metaVendedor" class="form-control" tabindex="9"><br>
 
-                    <label for="epsVendedor">EPS:</label><br>
-                    <input type="text" id="epsVendedor" name="epsVendedor" class="form-control" tabindex="11"><br>
-                </div>
-                <div>
-                    <label for="idVendedor">Id Vendedor:</label><br>
-                    <input type="text" id="idVendedor" name="idVendedor" class="form-control id-field" value="0" readonly><br>
+                      <label for="idCalendarProgramas">ID calendar Programas:</label><br>
+                      <input type="text" id="idCalendarProgramas" name="idCalendarProgramas" class="form-control" tabindex="11"><br>
+                  </div>
+                  <div>
+                      <label class="id-label" for="idVendedor">Id Vendedor:</label><br>
+                      <input type="text" id="idVendedor" name="idVendedor" class="form-control id-field" value="0" readonly><br>
 
-                    <label for="apellidoVendedor">Apellidos:</label><br>
-                    <input type="text" id="apellidoVendedor" name="apellidoVendedor" class="form-control" tabindex="2"><br>
+                      <label for="apellidoVendedor">Apellidos:</label><br>
+                      <input type="text" id="apellidoVendedor" name="apellidoVendedor" class="form-control" tabindex="2"><br>
 
-                    <label for="direccionVendedor">Direccion:</label><br>
-                    <input type="text" id="direccionVendedor" name="direccionVendedor" class="form-control" tabindex="4"><br>
+                      <label for="ciudadVendedor">Ciudad:</label><br>
+                      <input type="text" id="ciudadVendedor" name="ciudadVendedor" class="form-control" tabindex="4"><br>
 
-                    <label for="metaVendedor">Meta anual:</label><br>
-                    <input type="text" id="metaVendedor" name="metaVendedor" class="form-control" tabindex="6"><br>
+                      <label for="direccionVendedor">Direccion:</label><br>
+                      <input type="text" id="direccionVendedor" name="direccionVendedor" class="form-control" tabindex="6"><br>
 
-                    <label for="historicoVendedor">Histórico de ventas:</label><br>
-                    <input type="text" id="historicoVendedor" name="historicoVendedor" class="form-control" tabindex="8"><br>
+                      <label for="emailVendedor">Email:</label><br>
+                      <input type="email" id="emailVendedor" name="emailVendedor" class="form-control" tabindex="8"><br>
 
-                    <label for="qtyVentasVendedor">Cantidad de ventas:</label><br>
-                    <input type="text" id="qtyVentasVendedor" name="qtyVentasVendedor" class="form-control" tabindex="10"><br>
+                      <label for="idCalendarDemos">ID calendar Demos/Mantenimientos:</label><br>
+                      <input type="text" id="idCalendarDemos" name="idCalendarDemos" class="form-control" tabindex="10"><br>
 
-                    <label for="cargoVendedor">Cargo:</label><br>
-                    <input type="text" id="cargoVendedor" name="cargoVendedor" class="form-control" tabindex="12" value="VENDEDOR"><br>
-                </div>
-            </div>
-        </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="13">Cerrar</button>
-          <button type="button" class="btn btn-primary" onclick="enviarFormVendedor()" id="btnGuardarVendedor" tabindex="14">Guardar cambios</button>
-          <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingVendedor" disabled>
-            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-            <span role="status">Actualizando...</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Modal Cliente -->
-  <div class="modal fade" id="createModalCliente" tabindex="-1" aria-labelledby="createModalCliente" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="headerModalCliente">Crear un nuevo registro</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form name="form-crear-cliente" id="id-form-crear-cliente" action="#" method="post">
-            <div class="columnas">
-                <div>
-                    <label for="idPersonaCliente">Id Persona:</label><br>
-                    <input type="text" id="idPersonaCliente" name="idPersonaCliente" class="form-control id-field" value="0" readonly><br>
-
-                    <label for="nombreCliente">Nombres:</label><br>
-                    <input type="text" id="nombreCliente" name="nombreCliente" class="form-control" tabindex="1"><br>
-
-                    <label for="celularCliente">Celular:</label><br>
-                    <input type="text" id="celularCliente" name="celularCliente" class="form-control" tabindex="3"><br>
-
-                    <label for="departamentoCliente">Departamento:</label><br>
-                    <input type="text" id="departamentoCliente" name="departamentoCliente" class="form-control" tabindex="5"><br>
-
-                    <label for="ciudadCliente">Ciudad:</label><br>
-                    <input type="text" id="ciudadCliente" name="ciudadCliente" class="form-control" tabindex="7"><br>
-
-                    <label for="emailCliente">Email:</label><br>
-                    <input type="email" id="emailCliente" name="emailCliente" class="form-control" tabindex="9"><br>
-
-                    <label for="origenCliente">Origen:</label><br>
-                    <select id="origenCliente" name="origenCliente" class="form-select" tabindex="11">
-                        <option value="PROSPECCION EN FRIO">PROSPECCION EN FRIO</option>
-                        <option value="STAND">STAND</option>
-                        <option value="MERCADO NATURAL">MERCADO NATURAL</option>
-                        <option value="BUZON">BUZON</option>
-                    </select><br>
-
-                    <label for="calificacionCliente">Prospecto:</label><br>
-                    <label for="calificacionCliente" id="numberCalificacionCliente">50</label><input type="range" min="0" max="100" step="5" id="calificacionCliente" name="calificacionCliente" class="form-range" tabindex="13"><br>
-                </div>
-                <div>
-                    <label for="idCliente">Id Cliente:</label><br>
-                    <input type="text" id="idCliente" name="idCliente" class="form-control id-field" value="0" readonly><br>
-
-                    <label for="apellidoCliente">Apellidos:</label><br>
-                    <input type="text" id="apellidoCliente" name="apellidoCliente" class="form-control" tabindex="2"><br>
-
-                    <label for="direccionCliente">Direccion:</label><br>
-                    <input type="text" id="direccionCliente" name="direccionCliente" class="form-control" tabindex="4"><br>
-
-                    <label for="vendedorCliente">Vendedor:</label><br>
-                    <select id="vendedorCliente" name="vendedorCliente" class="form-select vendedor-array" tabindex="6">
-                    </select><br>
-
-                    <label for="empleadoCliente">Telemarketing:</label><br>
-                    <select id="empleadoCliente" name="empleadoCliente" class="form-select empleado-array" tabindex="8">
-                    </select><br>
-
-                    <label for="contacto_referenteCliente">Contacto Referente:</label><br>
-                    <select id="contacto_referenteCliente" name="contacto_referenteCliente" class="form-select cliente-array" tabindex="10">
-                    </select><br>
-
-                    <label for="programaCliente">Programa:</label><br>
-                    <select id="programaCliente" name="programaCliente" class="form-select programa-array" tabindex="12"  selected="0-NO APLICA">
-                    </select><br>
-                </div>
-            </div>
-        </form>
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="14">Cerrar</button>
-          <button type="button" class="btn btn-primary btnGuardarCliente" onclick="enviarFormCliente()" id="btnGuardarCliente" tabindex="15">Guardar cambios</button>
-          <button class="btn btn-primary d-none btnLoadingCliente" type="button" id="btnLoadingCliente" disabled>
-            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-            <span role="status">Actualizando...</span>
-          </button>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="activoVendedor" name="activoVendedor" tabindex="12" checked>
+                        <label class="form-check-label" for="activoVendedor">El asesor está activo?</label>
+                      </div>
+                  </div>
+              </div>
+          </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="12">Cerrar</button>
+            <button type="button" class="btn btn-primary" onclick="enviarFormVendedor()" id="btnGuardarVendedor" tabindex="13">Guardar cambios</button>
+            <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingVendedor" disabled>
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span role="status">Actualizando...</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <!-- Modal Evento -->
-  <div class="modal fade" id="createModalEvento" tabindex="-1" aria-labelledby="createModalEvento" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="headerModalEvento">Crear/Editar un Evento</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Modal Cliente -->
+    <div class="modal fade" id="createModalCliente" tabindex="-1" aria-labelledby="createModalCliente" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="headerModalCliente">Crear/Editar un nuevo Cliente</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form name="form-crear-cliente" id="id-form-crear-cliente" action="#" method="post">
+              <div class="columnas">
+                  <div>
+                      <label class="id-label" for="idPersonaCliente">Id Persona:</label><br>
+                      <input type="text" id="idPersonaCliente" name="idPersonaCliente" class="form-control id-field" value="0" readonly><br>
+
+                      <label for="nombreCliente">Nombres:</label><br>
+                      <input type="text" id="nombreCliente" name="nombreCliente" class="form-control" tabindex="2"><br>
+
+                      <label for="departamentoCliente">Departamento:</label><br>
+                      <input type="text" id="departamentoCliente" name="departamentoCliente" class="form-control" tabindex="5"><br>
+
+                      <label for="nucleoCliente">Nucleo Familiar:</label><br>
+                      <input type="text" id="nucleoCliente" name="nucleoCliente" class="form-control" tabindex="8"><br>
+
+                      <label for="programaCliente">Programa:</label><br>
+                      <select id="programaCliente" name="programaCliente" class="form-select programa-array" tabindex="11">
+                      </select><br>
+
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="activoCliente" name="activoCliente" tabindex="14" checked>
+                        <label class="form-check-label" for="activoCliente">El cliente está activo?</label>
+                      </div>
+                  </div>
+                  <div>
+                      <label class="id-label" for="idCliente">Id Cliente:</label><br>
+                      <input type="text" id="idCliente" name="idCliente" class="form-control id-field" value="0" readonly><br>
+
+                      <label for="apellidoCliente">Apellidos:</label><br>
+                      <input type="text" id="apellidoCliente" name="apellidoCliente" class="form-control" tabindex="3"><br>
+
+                      <label for="ciudadCliente">Ciudad:</label><br>
+                      <input type="text" id="ciudadCliente" name="ciudadCliente" class="form-control" tabindex="6"><br>
+
+                      <label for="vendedorCliente">Vendedor:</label><br>
+                      <select id="vendedorCliente" name="vendedorCliente" class="form-select vendedor-array" tabindex="9">
+                      </select><br>
+
+                      <label for="origenCliente">Origen:</label><br>
+                      <select id="origenCliente" name="origenCliente" class="form-select" tabindex="12">
+                          <option value="PROSPECCION EN FRIO">PROSPECCION EN FRIO</option>
+                          <option value="STAND">STAND</option>
+                          <option value="MERCADO NATURAL">MERCADO NATURAL</option>
+                          <option value="BUZON" selected>BUZON</option>
+                      </select><br>
+                  </div>
+                  <div>
+                      <label for="celularCliente">Celular:</label><br>
+                      <input type="text" id="celularCliente" name="celularCliente" class="form-control" tabindex="1"><br>
+
+                      <label for="emailCliente">Email:</label><br>
+                      <input type="email" id="emailCliente" name="emailCliente" class="form-control" tabindex="4"><br>
+
+                      <label for="direccionCliente">Direccion:</label><br>
+                      <input type="text" id="direccionCliente" name="direccionCliente" class="form-control" tabindex="7"><br>
+
+                      <label for="contacto_referenteCliente">Contacto Referente:</label><br>
+                      <select id="contacto_referenteCliente" name="contacto_referenteCliente" class="form-select cliente-array" tabindex="10">
+                      </select><br>
+
+                      <label for="empleadoCliente">Telemarketing:</label><br>
+                      <select id="empleadoCliente" name="empleadoCliente" class="form-select empleado-array" tabindex="13">
+                      </select><br>
+
+                  </div>
+              </div>
+          </form>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="15">Cerrar</button>
+            <button type="button" class="btn btn-primary btnGuardarCliente" onclick="enviarFormCliente()" id="btnGuardarCliente" tabindex="16">Guardar cambios</button>
+            <button class="btn btn-primary d-none btnLoadingCliente" type="button" id="btnLoadingCliente" disabled>
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span role="status">Actualizando...</span>
+            </button>
+          </div>
         </div>
-        <div class="modal-body">
-          <form name="form-crear-evento" id="id-form-crear-evento" action="#" method="post">
-            <div class="columnas">
-                <div>
-                    <label for="idEvento">Id:</label><br>
-                    <input type="text" id="idEvento" name="idEvento" class="form-control id-field" value="0" readonly><br>
+      </div>
+    </div>
+    <!-- Modal Programa -->
+    <div class="modal fade" id="createModalPrograma" tabindex="-1" aria-labelledby="createModalPrograma" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="headerModalPrograma">Crear/Editar un nuevo Programa</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form name="form-crear-programa" id="id-form-crear-programa" action="#" method="post">
 
-                    <label for="fechaEvento">Fecha del evento:</label><br>
-                    <input type="date" id="fechaEvento" name="fechaEvento" class="form-control" tabindex="2"><br>
+              <label class="id-label" for="idPrograma">Id Programa:</label><br>
+              <input type="text" id="idPrograma" name="idPrograma" class="form-control id-field" value="0" readonly><br>
 
-                    <label for="horaInicioEvento">Hora de inicio del evento:</label><br>
-                    <input type="time" id="horaInicioEvento" name="horaInicioEvento" class="form-control" tabindex="4"><br>
+              <label for="fechaPrograma">Fecha del programa:</label><br>
+              <input type="date" id="fechaPrograma" name="fechaPrograma" class="form-control" tabindex="1"><br>
 
-                    <label for="correosEvento">Correos a notificar el evento (separar por coma):</label><br>
-                    <input type="text" id="correosEvento" name="correosEvento" class="form-control" tabindex="6"><br>
+              <label for="clientePrograma">Cliente que genera el programa:</label><br>
+              <select id="clientePrograma" name="clientePrograma" class="form-select cliente-array" tabindex="2">
+              </select><br>
 
-                    <label for="clienteEvento">Cliente:</label><br>
-                    <select id="clienteEvento" name="clienteEvento" class="form-select cliente-array" tabindex="8">
-                    </select><br>
-                </div>
-                <div>
-                    <label for="tipoEvento">Estado del evento:</label><br>
-                    <select id="tipoEvento" name="tipoEvento" class="form-select" tabindex="1">
-                        <option value="DEMO">DEMO</option>
-                        <option value="MANTENIMIENTO">TIENE ROYAL</option>
-                        <option value="SEGUIMIENTO">SEGUIMIENTO</option>
-                    </select><br>
+              <label for="vendedorPrograma">Asesor:</label><br>
+              <select id="vendedorPrograma" name="vendedorPrograma" class="form-select vendedor-array" tabindex="3">
+              </select><br>
 
-                    <label for="estadoEvento">Estado del evento:</label><br>
-                    <select id="estadoEvento" name="estadoEvento" class="form-select" tabindex="3">
+              <label for="premioPrograma">Premio del programa:</label><br>
+              <input type="text" id="premioPrograma" name="premioPrograma" class="form-control" tabindex="4"><br>
+
+              <label for="resultadoPrograma">Resultado del programa:</label><br>
+              <select id="resultadoPrograma" name="resultadoPrograma" class="form-select" tabindex="5">
+                  <option value="GANADO">GANADO</option>
+                  <option value="PERDIDO">PERDIDO</option>
+                  <option value="EN CURSO" selected>EN CURSO</option>
+              </select><br>
+
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="5">Cerrar</button>
+            <button type="button" class="btn btn-primary" onclick="enviarFormPrograma()" id="btnGuardarPrograma" tabindex="6">Guardar cambios</button>
+            <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingPrograma" disabled>
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span role="status">Actualizando...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal Evento -->
+    <div class="modal fade" id="createModalEvento" tabindex="-1" aria-labelledby="createModalEvento" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="headerModalEvento">Crear/Editar un Evento</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form name="form-crear-evento" id="id-form-crear-evento" action="#" method="post">
+              <div class="columnas">
+                  <div>
+                      <label class="id-label" for="idEvento">Id:</label><br>
+                      <input type="text" id="idEvento" name="idEvento" class="form-control id-field" value="0" readonly><br>
+
+                      <label for="fechaEvento">Fecha del evento:</label><br>
+                      <input type="date" id="fechaEvento" name="fechaEvento" class="form-control" tabindex="2"><br>
+
+                      <label for="horaInicioEvento">Hora de inicio del evento:</label><br>
+                      <input type="time" id="horaInicioEvento" name="horaInicioEvento" class="form-control" tabindex="4"><br>
+
+                      <label for="resetPersona">RESET PERSONA:</label><br>
+                      <select id="resetPersona" name="resetPersona" class="form-select" tabindex="6">
+                          <option value="NO APLICA">NO APLICA</option>
+                          <option value="ASESOR">ASESOR</option>
+                          <option value="TELE">TELE</option>
+                      </select><br>
+
+                      <label for="programaEvento">Programa al cual pertenece el evento:</label><br>
+                      <select id="programaEvento" name="programaEvento" class="form-select programa-array" tabindex="8">
+                      </select><br>
+                      
+                      <label for="vendedorEvento">Vendedor:</label><br>
+                      <select id="vendedorEvento" name="vendedorEvento" class="form-select vendedor-array" tabindex="10">
+                      </select><br>
+
+                      <label for="correosEvento">Correos a notificar el evento (separar por coma):</label><br>
+                      <input type="text" id="correosEvento" name="correosEvento" class="form-control" tabindex="12" placeholder="Opcional..."><br>
+                  </div>
+                  <div>
+                      <label for="tipoEvento">Estado del evento:</label><br>
+                      <select id="tipoEvento" name="tipoEvento" class="form-select" tabindex="1">
+                          <option value="DEMO">DEMO</option>
+                          <option value="MANTENIMIENTO">TIENE ROYAL</option>
+                          <option value="SEGUIMIENTO" selected>SEGUIMIENTO</option>
+                      </select><br>
+
+                      <label for="estadoEvento">Estado del evento:</label><br>
+                      <select id="estadoEvento" name="estadoEvento" class="form-select" tabindex="3">
                         <option value="AGENDADO">AGENDADO</option>
+                        <option value="ACTIVO">ACTIVO</option>
+                        <option value="NO INTERESA">NO INTERESA</option>
+                        <option value="VISITADO">VISITADO</option>
+                        <option value="YA TIENE ROYAL">YA TIENE ROYAL</option>
                         <option value="RESET">RESET</option>
                         <option value="RESET REPROGRAMADO">RESET REPROGRAMADO</option>
-                        <option value="NO ACTIVO">NO ACTIVO</option>
-                        <option value="NUEVO">NUEVO</option>
-                    </select><br>
+                      </select><br>
 
-                    <label for="horaFinEvento">Hora de finalización del evento:</label><br>
-                    <input type="time" id="horaFinEvento" name="horaFinEvento" class="form-control" tabindex="5"><br>
+                      <label for="horaFinEvento">Hora de finalización del evento:</label><br>
+                      <input type="time" id="horaFinEvento" name="horaFinEvento" class="form-control" tabindex="5"><br>
 
-                    <label for="vendedorEvento">Vendedor:</label><br>
-                    <select id="vendedorEvento" name="vendedorEvento" class="form-select vendedor-array" tabindex="7">
-                    </select><br>
+                      <label for="resetMotivo">RESET Motivo:</label><br>
+                      <select id="resetMotivo" name="resetMotivo" class="form-select" tabindex="7">
+                          <option value="NO APLICA">NO APLICA</option>
+                          <option value="NO CONTESTA">NO CONTESTA</option>
+                          <option value="CLIENTE AUSENTE">CLIENTE AUSENTE</option>
+                          <option value="NO ASISTE ASESOR">NO ASISTE ASESOR</option>
+                          <option value="NUCLEO INCOMPLETO">NUCLEO INCOMPLETO</option>
+                          <option value="VIAJE">VIAJE</option>
+                          <option value="SALUD">SALUD</option>
+                          <option value="TRABAJO">TRABAJO</option>
+                      </select><br>
 
-                    <label for="empleadoEvento">Telemarketing:</label><br>
-                    <select id="empleadoEvento" name="empleadoEvento" class="form-select empleado-array" tabindex="9">
-                    </select><br>
-                </div>
-            </div>
-            <label for="observacionesEvento">Observaciones:</label><br>
-            <textarea id="observacionesEvento" name="observacionesEvento" rows="4" cols="50" class="form-control" style="width: 100%;" tabindex="11"></textarea><br>
-        </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="12">Cerrar</button>
-          <button type="button" class="btn btn-primary" onclick="enviarFormEvento()" id="btnGuardarEvento" tabindex="13">Guardar cambios</button>
-          <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingEvento" disabled>
-            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-            <span role="status">Actualizando...</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Modal Programa -->
-  <div class="modal fade" id="createModalPrograma" tabindex="-1" aria-labelledby="createModalPrograma" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="headerModalPrograma">Crear un nuevo registro</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form name="form-crear-programa" id="id-form-crear-programa" action="#" method="post">
+                      <label for="clienteEvento">Cliente:</label><br>
+                      <select id="clienteEvento" name="clienteEvento" class="form-select cliente-array" tabindex="9">
+                      </select><br>
 
-            <label for="idPrograma">Id Programa:</label><br>
-            <input type="text" id="idPrograma" name="idPrograma" class="form-control id-field" value="0" readonly><br>
-
-            <label for="idEventoPrograma">Id Evento:</label><br>
-            <input type="text" id="idEventoPrograma" name="idEventoPrograma" class="form-control id-field" value="0" readonly><br>
-
-            <label for="nombrePrograma">Nombre del programa:</label><br>
-            <select id="nombrePrograma" name="nombrePrograma" class="form-select" tabindex="1">
-              <option value="4 EN 14">4 EN 14</option>
-            </select><br>
-
-            <label for="correosPrograma">Correos a notificar el programa (separar por coma):</label><br>
-            <input type="text" id="correosPrograma" name="correosPrograma" class="form-control" tabindex="2"><br>
-
-            <label for="diasPrograma">Dias hábiles del programa:</label><br>
-            <input type="text" id="diasPrograma" name="diasPrograma" class="form-control" tabindex="3" readonly value="14"><br>
-
-            <label for="premioPrograma">Premio del programa:</label><br>
-            <input type="text" id="premioPrograma" name="premioPrograma" class="form-control" tabindex="4"><br>
-
-            <label for="resultadoPrograma">Resultado del programa:</label><br>
-            <select id="resultadoPrograma" name="resultadoPrograma" class="form-select" tabindex="5">
-                <option value="GANADO">GANADO</option>
-                <option value="PERDIDO">PERDIDO</option>
-                <option value="EN CURSO">EN CURSO</option>
-            </select><br>
-
-            <label for="eventoPrograma">Evento relacionado al programa:</label><br>
-            <select id="eventoPrograma" name="eventoPrograma" class="form-select evento-array" tabindex="6">
-            </select><br>
-
+                      <label for="empleadoEvento">Telemarketing:</label><br>
+                      <select id="empleadoEvento" name="empleadoEvento" class="form-select empleado-array" tabindex="11">
+                      </select><br>
+                  </div>
+              </div>
+              <label for="observacionesEvento">Observaciones:</label><br>
+              <textarea id="observacionesEvento" name="observacionesEvento" rows="4" cols="50" class="form-control" style="width: 100%;" tabindex="13"></textarea><br>
           </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="7">Cerrar</button>
-          <button type="button" class="btn btn-primary" onclick="enviarFormPrograma()" id="btnGuardarPrograma" tabindex="8">Guardar cambios</button>
-          <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingPrograma" disabled>
-            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-            <span role="status">Actualizando...</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Modal Venta -->
-  <div class="modal fade" id="createModalVenta" tabindex="-1" aria-labelledby="createModalVenta" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="headerModalVenta">Crear un nuevo registro</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form name="form-crear-venta" id="id-form-crear-venta" action="#" method="post">
-
-            <label for="idVenta">Id Venta:</label><br>
-            <input type="text" id="idVenta" name="idVenta" class="form-control id-field" value="0" readonly><br>
-
-            <label for="idEventoVenta">Id Evento:</label><br>
-            <input type="text" id="idEventoVenta" name="idEventoVenta" class="form-control id-field" value="0" readonly><br>
-
-            <label for="articuloVenta">Articulo:</label><br>
-            <input type="text" id="articuloVenta" name="articuloVenta" class="form-control" tabindex="1"><br>
-
-            <label for="valorVenta">Valor:</label><br>
-            <input type="text" id="valorVenta" name="valorVenta" class="form-control" tabindex="2"><br>
-
-            <label for="modoPagoVenta">Modalidad de Pago:</label><br>
-            <select id="modoPagoVenta" name="modoPagoVenta" class="form-select" tabindex="3">
-                <option value="CUOTAS">CUOTAS</option>
-                <option value="EFECTIVO">EFECTIVO</option>
-                <option value="TRANSFERENCIA">TRANSFERENCIA</option>
-            </select><br>
-
-            <label for="eventoVenta">Evento relacionado a la venta:</label><br>
-            <select id="eventoVenta" name="eventoVenta" class="form-select evento-array" tabindex="4">
-            </select><br>
-
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="5">Cerrar</button>
-          <button type="button" class="btn btn-primary" onclick="enviarFormVenta()" id="btnGuardarVenta" tabindex="6">Guardar cambios</button>
-          <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingVenta" disabled>
-            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-            <span role="status">Actualizando...</span>
-          </button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="14">Cerrar</button>
+            <button type="button" class="btn btn-primary" onclick="enviarFormEvento()" id="btnGuardarEvento" tabindex="14">Guardar cambios</button>
+            <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingEvento" disabled>
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span role="status">Actualizando...</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+    <!-- Modal Venta -->
+    <div class="modal fade" id="createModalVenta" tabindex="-1" aria-labelledby="createModalVenta" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="headerModalVenta">Crear/Editar una nueva Venta</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form name="form-crear-venta" id="id-form-crear-venta" action="#" method="post">
 
+              <label class="id-label" for="idVenta">Id Venta:</label><br>
+              <input type="text" id="idVenta" name="idVenta" class="form-control id-field" value="0" readonly><br>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+              <label class="id-label" for="idEventoVenta">Id Evento:</label><br>
+              <input type="text" id="idEventoVenta" name="idEventoVenta" class="form-control id-field" value="0" readonly><br>
+
+              <label for="articuloVenta">Articulo:</label><br>
+              <input type="text" id="articuloVenta" name="articuloVenta" class="form-control" tabindex="1"><br>
+
+              <label for="valorVenta">Valor:</label><br>
+              <input type="text" id="valorVenta" name="valorVenta" class="form-control" tabindex="2"><br>
+
+              <label for="modoPagoVenta">Modalidad de Pago:</label><br>
+              <select id="modoPagoVenta" name="modoPagoVenta" class="form-select" tabindex="3">
+                  <option value="CUOTAS">CUOTAS</option>
+                  <option value="EFECTIVO">EFECTIVO</option>
+                  <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+              </select><br>
+
+              <label for="eventoVenta">Evento relacionado a la venta:</label><br>
+              <select id="eventoVenta" name="eventoVenta" class="form-select evento-array" tabindex="4">
+              </select><br>
+
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="5">Cerrar</button>
+            <button type="button" class="btn btn-primary" onclick="enviarFormVenta()" id="btnGuardarVenta" tabindex="6">Guardar cambios</button>
+            <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingVenta" disabled>
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span role="status">Actualizando...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+  <footer>
+    <div class="footer-div" id="div-reporte-excel">
+      <div class="div-fechas-footer">
+        <div class="div-fechas-reporte-excel">
+          <label for="fechaReporteExcelInicio">Fecha inicial:</label>
+          <input type="date" id="fechaReporteExcelInicio" name="fechaReporteExcelInicio">
+        </div>
+        <div class="div-fechas-reporte-excel">
+          <label for="fechaReporteExcelFin">Fecha final:</label>
+          <input type="date" id="fechaReporteExcelFin" name="fechaReporteExcelFin">
+        </div>
+        
+        
+      </div>
+      <button class="btn btn-warning" onclick="generarReporteExcel()" id="id-btn-reporte-excel">Generar reporte Excel</button>
+      <button class="btn btn-warning d-none btn-loading" type="button" id="id-btn-reporte-excel-loading" disabled>
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span role="status">Generando...</span>
+            </button>
+    </div>
+    <div class="footer-div" id="div-reporte-form"></div>
+    <div class="footer-div" id="div-firma"></div>
+  </footer>
+
   <script src="https://code.jquery.com/jquery-3.7.1.js" type="text/Javascript"></script>
-  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js" type="text/Javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js" type="text/Javascript"></script>
+  <script src="https://cdn.datatables.net/2.0.6/js/dataTables.js" type="text/Javascript"></script>
+  <script src="https://cdn.datatables.net/2.0.6/js/dataTables.bootstrap5.js" type="text/Javascript"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js" type="text/Javascript"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.bootstrap5.js" type="text/Javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" type="text/Javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" type="text/Javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js" type="text/Javascript"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js" type="text/Javascript"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.min.js" type="text/Javascript"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.colVis.min.js" type="text/Javascript"></script>
+  
   <?!= include('js'); ?>
 </body>
 </html>
