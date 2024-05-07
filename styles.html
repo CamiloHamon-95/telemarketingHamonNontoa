@@ -1,12 +1,53 @@
 <style>
 
+  html {
+    height:100%
+  }
+
   body {
+    /* Fallback color */
+    background-color: #ffffff;
+    /* Degradado */
+    //background-image: circular-gradient(#0063B5, #D2EAFF);
+    background: linear-gradient(#001F3E, #7592B0);
+    //background: radial-gradient(ellipse at top, #0063B5, transparent),radial-gradient(ellipse at bottom, #D2EAFF, transparent);
+    /* Si es necesario agregar compatibilidad con navegadores antiguos */
+    display: flex;
+    flex-direction:column;
+    flex-wrap:nowrap;
     margin: 0; /* Eliminar márgenes predeterminados */
     padding: 0; /* Eliminar relleno predeterminado */
     width: 100vw; /* Establecer el ancho al 100% del viewport width */
     height: 100vh; /* Establecer la altura al 100% del viewport height */
-    overflow: hidden; /* Evitar desbordamiento horizontal o vertical */
+    overflow-x: hidden; /* Evitar desbordamiento horizontal o vertical */
+  }
 
+  title {
+    display: block;
+  }
+
+  .header {
+    position: relative;
+    top:0;
+    left:0;
+    width: 100%;
+    padding: 0.8rem 5%;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    z-index: 100;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.1);
+    backdrop-filter: blur(50px);
+    z-index: -1;
   }
 
 
@@ -23,37 +64,32 @@
   }
 
   .sections-tables {
-    display: flex;
-    width: 100%;
-    height: 80%;
-    padding: 0.5rem 0.5rem;
-    justify-content:center;
-    align-items: center;
-  }
-
-  .specific-table {
-    width: 100%;
-    height: 100%;
-    padding: 4rem 4rem 4rem 4rem;
-    overflow-x: auto; /* Hace que la tabla sea desplazable horizontalmente si es necesario */
-    overflow-y: auto; /* Hace que la tabla sea desplazable verticalmente si es necesario */
+    margin: 0 2rem;
+    /* Si es necesario agregar compatibilidad con navegadores antiguos */
+    color: black;
+    padding: 2rem;
+    overflow:auto;
+    /* Fallback color */
+    background-color: #ffffff;
+    /* Degradado */
+    background-image: linear-gradient(to bottom right, #CFE9FF, #ffffff, #CFE9FF);
   }
 
   table {
-    font-size: 0.8rem;
+    color: black;
     width: 100%;
-    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+
+  .dt-container {
+    height: 25rem;
+    overflow: auto;
   }
 
   .bi-pencil-square {
-    color:#26D12D;
-  }
-
-  .div-btn-primary {
-    display: flex;
-    width: 100%;
-    justify-content:center;
-    align-items: center;
+    color:#1A8856;
+    width:100px;
+    height: 100px;
   }
 
   .buttons {
@@ -68,7 +104,7 @@
   h2 {
     width: 100%;
     text-align: center;
-    font-size: 2rem;
+    font-size: 1.2rem;
     padding: 0.5rem 0.5rem;
   }
 
@@ -89,38 +125,31 @@
     background-color: #B4B4B4;
   }
 
-  nav {
-    background-color: #333;
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 3px 20px;
+  .modal {
+    --bs-modal-width: 50rem;
   }
 
   .logo {
-    font-weight: bold;
-  }
-
-  .nav-links {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-  }
-
-  .nav-links li {
-    margin-right: 15px;
-    height: 95%
-  }
-
-  .nav-links li:last-child {
-    margin-right: 0;
-  }
-
-  .nav-links a {
-    text-decoration: none;
+    font-size: 1.5rem;
     color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-weight: bold;
+    width: 100%;
+  }
+
+  .navbar {
+    flex-wrap: nowrap;
+    flex-direction: row;
+    padding: 0;
+  }
+
+  .navbar a {
+    font-size: 1rem;
+    color: #fff;
+    font-weight: 500;
+    margin-left: 2.5rem;
+    text-decoration: none;
   }
 
   /* Estilos para navbar responsive */
@@ -129,40 +158,92 @@
     display: none; /* Oculta el botón de menú en pantallas grandes */
   }
 
-  .nav-links {
+  #nav-toggle{
+    display:none;
+  }
+
+  footer{
     display: flex;
+    justify-content: center;
+    flex-direction: row; /* Alinear elementos en fila */
+    width: 100%; /* Toma el ancho completo del contenedor */
+    margin: 1rem;
+  }
+
+  .footer-div {
+    display:flex;
+    flex-direction:column;
+    padding: 5px; 
+  }
+
+  .div-fechas-footer {
+    display:flex;
+    flex-direction:row;
+    flex-grow: 1; 
+  }
+  #div-reporte-excel {
+    padding: 2rem;
+    color: #fff;
+    background:#001F3E;
+    border-radius: 2rem;
+  }
+
+  .div-fechas-reporte-excel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    justify-content: space-around;
+    padding: 1rem;
+  }
+
+  .div-fechas-reporte-excel label {
+    width: 50%;
   }
 
   /* Estilos para pantallas pequeñas */
-  @media screen and (max-width: 768px) {
-    .nav-links {
-      display: none; /* Oculta los enlaces del navbar en pantallas pequeñas */
+  @media screen and (max-width: 1024px) {
+    .navbar {
       flex-direction: column;
       position: absolute;
-      top: 40px;
+      top: 100%;
       left: 0;
-      width: 100%;
-      background-color: #333;
-    }
-
-    .nav-links li {
-      margin: 0;
-      text-align: center;
+      height: 0;
+      width:100%;
+      background: rgba(0,0,0,0.1);
+      backdrop-filter: blur(50px);
+      transition: .3s ease;
+      overflow:hidden;
     }
 
     .nav-toggle-label {
+      color:#fff;
       display: block; /* Muestra el botón de menú en pantallas pequeñas */
       font-size: 1.5em;
       z-index: 2;
+      right: 0;
     }
 
-    input[type="checkbox"] {
-      display: none; /* Oculta el checkbox en pantallas pequeñas */
+    #nav-toggle:checked~.navbar {
+      height: 15rem;
     }
 
-    input[type="checkbox"]:checked + .nav-links {
-      display: flex; /* Muestra los enlaces del navbar cuando el checkbox está chequeado */
+    .navbar a {
+      width: 100%;
+      display:block;
+      font-size: 1.2rem;
+      text-align:center;
+      text-decoration: none;
+      color: #fff;
+      transform: translateY(-50px);
+      transition: .3s ease;
     }
+
+    #nav-toggle:checked~.navbar a {
+      transform: translateY(0);
+    }
+
+    
   }
 
 </style>
