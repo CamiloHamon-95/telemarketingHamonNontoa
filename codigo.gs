@@ -1,4 +1,6 @@
-const ss = SpreadsheetApp.getActiveSpreadsheet();
+const BD_ID = '1-Ajhs5Zrdlk-OTewYC3bVi0A-HhuihENJRhngtv0zZQ';
+const ss = SpreadsheetApp.openById(BD_ID);
+
 const sheetPersona = ss.getSheetByName('persona'); 
 const [headers_persona, ...usersInfo_persona] = sheetPersona.getDataRange().getDisplayValues();
 const sheetEvento = ss.getSheetByName('evento'); 
