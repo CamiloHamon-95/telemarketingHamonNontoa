@@ -1,554 +1,998 @@
 <script defer>
-
-  var botones = document.querySelectorAll('.btn-main');
-  var droplistClientes = document.querySelectorAll('.cliente-array');
-  var droplistEmpleados = document.querySelectorAll('.empleado-array');
-  var droplistVendedores = document.querySelectorAll('.vendedor-array');
-  var droplistEventos = document.querySelectorAll('.evento-array');
-  var droplistProgramas = document.querySelectorAll('.programa-array');
-  var sectionsTables = document.querySelectorAll('.sections-tables');
-  sectionsTables.forEach(function(element) {
-    element.style.display = 'none';
-  });
-
-  // Obtener elementos globales, fuera de la función
-  let barraDeTiempo = document.getElementById('calificacionCliente');
-  let cajaNumeral = document.getElementById('numberCalificacionCliente');
-  // Asignar evento a barra
-  barraDeTiempo.addEventListener('input', mostrar);
-  // Función para actualizar
-  function mostrar() {
-      // Asignar a caja el valor de la barra
-      cajaNumeral.innerHTML = barraDeTiempo.value;
-  }
-
-  // Iterar sobre cada botón para agregar un evento de clic
-  botones.forEach(function(boton) {
-    boton.addEventListener('click', function(event) {
-      sectionsTables.forEach(function(element) {
-        element.style.display = 'none';
-      });
-      var buttonId = event.target.id;
-      var nombreSeccion = buttonId.replace('Btn', '');
-      nombreSeccion = nombreSeccion+'-section';
-      var seccion = document.getElementById(nombreSeccion);
-      if (seccion.style.display === 'none') {
-        seccion.style.display = 'block'; // Muestra la sección
-      } else {
-        seccion.style.display = 'none'; // Oculta la sección
-      }
-    });
-  });
-
-  function loadingOnOff(btnNameGuardar,btnNameLoading){
-    console.log('IMPRESION NOMBRES DE LOS BOTONES');
-    console.log(btnNameGuardar);
-    console.log(btnNameLoading);
-    var btnGuardar = document.getElementById(btnNameGuardar);
-    var btnLoading = document.getElementById(btnNameLoading);
-    if (btnGuardar.classList.contains("d-none")) {
-      btnGuardar.classList.remove("d-none");
-      btnLoading.classList.add("d-none");
-    } else {
-      btnGuardar.classList.add("d-none");
-      btnLoading.classList.remove("d-none");
-    }
-  }
-
-
-  let objectInfo = {};
-  window.addEventListener('load' , () => {
-    google.script.run
-    .withSuccessHandler(object => {
-      objectInfo = object;
-      loadTable(objectInfo);
-    })
-    .getData();
-  } );
-
-  function loadTable ( object ){
-
-    var arreglosClientes = object['cliente']['usersInfo_cliente'];
-    var arreglosVendedores = object['vendedor']['usersInfo_vendedor'];
-    var arreglosEmpleados = object['empleado']['usersInfo_empleado'];
-    var arreglosEventos = object['evento']['usersInfo_evento'];
-    var arreglosProgramas = object['programa']['usersInfo_programa'];
-    var option_select_clientes = "";
-    var option_select_vendedores = "";
-    var option_select_empleados = "";
-    var option_select_eventos = "";
-    var option_select_programas = "";
-
-    // Iterar sobre cada array y obtener el valor en la posición 6
-    arreglosClientes.forEach(array => {
-      if (array.length >= 13) { 
-          option_select_clientes = option_select_clientes + '<option value="'+array[13]+'">' + array[13] + '</option>';
-      }
-    });
-
-    option_select_clientes = option_select_clientes + '<option value="0-NO APLICA"> 0-NO APLICA </option>';
-
-    arreglosVendedores.forEach(array => {
-      if (array.length >= 14) { 
-          option_select_vendedores = option_select_vendedores + '<option value="'+array[14]+'">' + array[14] + '</option>';
-      }
-    });
-
-    arreglosEmpleados.forEach(array => {
-      if (array.length >= 12) { 
-          option_select_empleados = option_select_empleados + '<option value="'+array[12]+'">' + array[12] + '</option>';
-      }
-    });
-
-    arreglosEventos.forEach(array => {
-      if (array.length >= 17) { 
-          option_select_eventos = option_select_eventos + '<option value="'+array[17]+'">' + array[17] + '</option>';
-      }
-    });
-
-    arreglosProgramas.forEach(array => {
-      if (array.length >= 18) { 
-          option_select_programas = option_select_programas + '<option value="'+array[18]+'">' + array[18] + '</option>';
-      }
-    });
-
-    option_select_programas = option_select_programas + '<option value="0-NO APLICA"> 0-NO APLICA </option>';
-
-    droplistVendedores.forEach(function(select) {
-      select.innerHTML = option_select_vendedores;
-    });
-    droplistEmpleados.forEach(function(select) {
-      select.innerHTML = option_select_empleados;
-    });
-    droplistClientes.forEach(function(select) {
-      select.innerHTML = option_select_clientes;
-    });
-    droplistEventos.forEach(function(select) {
-      select.innerHTML = option_select_eventos;
-    });
-    droplistProgramas.forEach(function(select) {
-      select.innerHTML = option_select_programas;
-    });
-
-    function capitalizeFirstLetter(string) {
-        string = string.replaceAll("_", ' ');
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
+  try {
+    var botones = document.querySelectorAll('.btn-main');
+    var droplistClientes = document.querySelectorAll('.cliente-array');
+    var droplistEmpleados = document.querySelectorAll('.empleado-array');
+    var droplistVendedores = document.querySelectorAll('.vendedor-array');
+    var droplistEventos = document.querySelectorAll('.evento-array');
+    var droplistProgramas = document.querySelectorAll('.programa-array');
+    var sectionsTables = document.querySelectorAll('.sections-tables');
+    var sectionEventos = document.getElementById("evento-section");
+    var spinnerTablas = document.getElementById('spinner-tabla-evento');
     
-    for (const key in object) {
-      const value = object[key];
-      const headers = value['headers_'+key];
-      const usersInfo = value['usersInfo_'+key];
-      const tableName = '#tabla-'+key;
 
-      const formattedCols = headers.map( header => {
-          header = capitalizeFirstLetter(header);
-          return {'title':header}
+    sectionsTables.forEach(function(element) {
+      element.style.display = 'none';
+    });
+
+    sectionEventos.style.display = 'block';
+
+    
+
+    // Obtener referencias a los elementos de entrada
+    var horaInicioInput = document.getElementById("horaInicioEvento");
+    var horaFinInput = document.getElementById("horaFinEvento");
+
+    // Agregar un evento 'change' a cada campo de entrada para detectar cambios
+    horaInicioInput.addEventListener("change", function() {
+        validarHoras();
+    });
+
+    horaFinInput.addEventListener("change", function() {
+        validarHoras();
+    });
+
+    function validarHoras() {
+        // Obtener valores de las horas de inicio y fin
+        var horaInicio = horaInicioInput.value;
+        var horaFin = horaFinInput.value;
+
+        // Convertir las cadenas de tiempo en objetos de fecha para comparación
+        var fechaInicio = new Date("2000-01-01T" + horaInicio + ":00");
+        var fechaFin = new Date("2000-01-01T" + horaFin + ":00");
+
+        // Comparar las horas y mostrar un mensaje de error si la hora de finalización es menor que la hora de inicio
+        if (fechaFin <= fechaInicio) {
+            alert("La hora de finalización debe ser posterior a la hora de inicio");
+            // Restablecer el valor del campo de hora de finalización
+            horaFinInput.value = "";
+        }
+    }
+
+    //------ FECHA Y HORA ACTUAL ---------------------------------------------------
+    // Obtener la fecha actual en formato YYYY-MM-DD
+    function obtenerFechaActual() {
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = (now.getMonth() + 1).toString().padStart(2, '0'); // El mes se cuenta desde 0
+      var day = now.getDate().toString().padStart(2, '0');
+
+      return year + "-" + month + "-" + day;
+    }
+
+    // Obtener la hora actual en formato HH:MM
+    function obtenerHoraActual(adicion) {
+      var now = new Date();
+      var mihora = now.getHours()+adicion;
+      var miminuto =now.getMinutes()+5;
+      var hora = mihora.toString().padStart(2, '0');
+      var minutos = miminuto.toString().padStart(2, '0');
+      return hora + ":" + minutos;
+    }
+
+    // Obtener referencias a los elementos de entrada
+    var fechaInput = document.getElementById("fechaEvento");
+    var fechaPrograma = document.getElementById("fechaPrograma");
+    var horaInicioInput = document.getElementById("horaInicioEvento");
+    var horaFinInput = document.getElementById("horaFinEvento");
+
+    // Asignar la fecha y hora actuales como valores predeterminados
+    
+    fechaInput.value = obtenerFechaActual();
+    horaInicioInput.value = obtenerHoraActual(0);
+    horaFinInput.value = obtenerHoraActual(1);
+    fechaPrograma.value = obtenerFechaActual();
+
+    // -----------------------------------------------------------------------------
+    // -------------- Diligenciamiento del correo ----------------------------------
+    /*
+    // Obtener referencia al elemento select y al elemento input
+    var selectElement = document.getElementById("vendedorEvento");
+    var inputElement = document.getElementById("correosEvento");
+
+    // Agregar un evento de cambio al elemento select
+    selectElement.addEventListener("change", function() {
+        // Obtener el valor seleccionado del select
+        var selectedValue = selectElement.value;
+        
+        // Separar los componentes del valor seleccionado
+        var components = selectedValue.split("-");
+        
+        // El correo electrónico es el último componente
+        var correo = components[components.length - 1];
+        
+        // Asignar el correo al valor del input
+        inputElement.value = correo;
+    });
+    */
+    // -----------------------------------------------------------------------------
+    // Fechas del reporte de Excel de FOOTER
+    var fechaInicioInput = document.getElementById("fechaReporteExcelInicio");
+    var fechaFinInput = document.getElementById("fechaReporteExcelFin");
+
+    // Agregar un event listener al elemento de fecha de inicio
+    fechaInicioInput.addEventListener("change", function() {
+        // Obtener la fecha seleccionada en el formato YYYY-MM-DD
+        var fechaInicio = fechaInicioInput.value;
+        
+        // Convertir la fecha de inicio a un objeto de tipo Date
+        var fechaInicioObj = new Date(fechaInicio);
+        
+        // Sumar 15 días a la fecha de inicio
+        fechaInicioObj.setDate(fechaInicioObj.getDate() + 15);
+        
+        // Formatear la nueva fecha en el formato YYYY-MM-DD
+        var fechaFin = fechaInicioObj.toISOString().slice(0, 10);
+        
+        // Establecer la nueva fecha en el elemento de fecha de fin
+        fechaFinInput.value = fechaFin;
+    });
+    // ------------------------------------------------------------------------------
+    // Agregar un evento 'change' a cada campo de entrada para detectar cambios
+    var selectProgramaEvento = document.getElementById("programaEvento");
+    var selectClienteEvento = document.getElementById("clienteEvento");
+    var selectVendedorEvento = document.getElementById("vendedorEvento");
+    selectProgramaEvento.addEventListener("change", function(event) {
+      var valueSelect = event.target.value;
+      if (valueSelect != '0-NO APLICA'){
+        var dataPrograma = valueSelect.split('-');
+        var cliente = dataPrograma.slice(2, 7).join("-");
+        var vendedor = dataPrograma.slice(7).join("-");
+        selectClienteEvento.value = cliente;
+        selectVendedorEvento.value = vendedor;
+      }
+    });
+    // ------------------------------------------------------------------------------
+    // Agregar un evento 'change' a cada campo de entrada para detectar cambios
+    var selectClientePrograma = document.getElementById("clientePrograma");
+    var selectVendedorPrograma = document.getElementById("vendedorPrograma");
+    selectClientePrograma.addEventListener("change", function(event) {
+      var valueSelect = event.target.value;
+      if (valueSelect != '0-NO APLICA'){
+        var dataCliente = valueSelect.split('-');
+        var vendedorPrograma = dataCliente.slice(5).join("-");
+        selectVendedorPrograma.value = vendedorPrograma;
+      }
+    });
+
+    // -----------------------------------------------------------------------------
+    // Iterar sobre cada botón para agregar un evento de clic
+    botones.forEach(function(boton) {
+      boton.addEventListener('click', function(event) {
+        sectionsTables.forEach(function(element) {
+          element.style.display = 'none';
         });
-      formattedCols.push({ 'title': 'Acciones' });
-      // Modificar la data para incluir el código HTML en la columna "Acciones"
-      const newData = usersInfo.map(row => {
-        // Aquí debes modificar 'row' según la estructura de tu objeto 'usersInfo'
-        const actionsHTML = '<i class="bi bi-pencil-square button-edit me-3" role="button" onclick="editarRegistroModal(this,nombreTabla=\''+key+'\')"></i>';
-        row.push(actionsHTML); // Agregar el código HTML a la fila
-        return row;
+        var buttonId = event.target.id;
+        var nombreSeccion = buttonId.replace('Btn', '');
+        nombreSeccion = nombreSeccion+'-section';
+        var seccion = document.getElementById(nombreSeccion);
+        if (seccion.style.display === 'none') {
+          seccion.style.display = 'block'; // Muestra la sección
+        } else {
+          seccion.style.display = 'none'; // Oculta la sección
+        }
       });
+    });
 
-      switch (key) {
-          case 'empleado':
-            var miTable = new DataTable(tableName,{
-              columns: formattedCols,
-              data: newData,
-              language: {
-                  lengthMenu: 'Mostrar _MENU_ registros por página',
-                  zeroRecords: 'Ningún registro encontrado',
-                  info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                  infoEmpty: 'Ningún registro econtrado',
-                  infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                  search: 'Buscar:',
-                  loadingRecords: 'Cargando...'
-              }
-            });
-            miTable.column(12).visible(false);
-            break;
-          case 'vendedor':
-            var miTable = new DataTable(tableName,{
-              columns: formattedCols,
-              data: newData,
-              language: {
-                  lengthMenu: 'Mostrar _MENU_ registros por página',
-                  zeroRecords: 'Ningún registro encontrado',
-                  info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                  infoEmpty: 'Ningún registro econtrado',
-                  infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                  search: 'Buscar:',
-                  loadingRecords: 'Cargando...'
-              }
-            });
-            miTable.column(14).visible(false);
-            break;
-          case 'cliente':
-            var miTable = new DataTable(tableName,{
-              columns: formattedCols,
-              data: newData,
-              language: {
-                  lengthMenu: 'Mostrar _MENU_ registros por página',
-                  zeroRecords: 'Ningún registro encontrado',
-                  info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                  infoEmpty: 'Ningún registro econtrado',
-                  infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                  search: 'Buscar:',
-                  loadingRecords: 'Cargando...'
-              }
-            });
-            miTable.column(2).visible(false);
-            miTable.column(3).visible(false);
-            miTable.column(4).visible(false);
-            miTable.column(13).visible(false);
-
-            break;
-          case 'evento':
-            var miTable = new DataTable(tableName,{
-              columns: formattedCols,
-              data: newData,
-              language: {
-                  lengthMenu: 'Mostrar _MENU_ registros por página',
-                  zeroRecords: 'Ningún registro encontrado',
-                  info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                  infoEmpty: 'Ningún registro econtrado',
-                  infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                  search: 'Buscar:',
-                  loadingRecords: 'Cargando...'
-              }
-            });
-            miTable.column(1).visible(false);
-            miTable.column(2).visible(false);
-            miTable.column(3).visible(false);
-            miTable.column(17).visible(false);
-            miTable.column(18).visible(false);
-            break;
-          case 'programa':
-            var miTable = new DataTable(tableName,{
-              columns: formattedCols,
-              data: newData,
-              language: {
-                  lengthMenu: 'Mostrar _MENU_ registros por página',
-                  zeroRecords: 'Ningún registro encontrado',
-                  info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                  infoEmpty: 'Ningún registro econtrado',
-                  infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                  search: 'Buscar:',
-                  loadingRecords: 'Cargando...'
-              }
-            });
-            miTable.column(18).visible(false);
-            miTable.column(19).visible(false);
-            break;
-          case 'venta':
-            var miTable = new DataTable(tableName,{
-              columns: formattedCols,
-              data: newData,
-              language: {
-                  lengthMenu: 'Mostrar _MENU_ registros por página',
-                  zeroRecords: 'Ningún registro encontrado',
-                  info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                  infoEmpty: 'Ningún registro econtrado',
-                  infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                  search: 'Buscar:',
-                  loadingRecords: 'Cargando...'
-              }
-            });
-            miTable.column(6).visible(false);
-            miTable.column(7).visible(false);
-            break;
-          default:
-            console.log('Caso no tenido en cuenta');
-            break;
+    function loadingOnOff(btnNameGuardar,btnNameLoading){
+      var btnGuardar = document.getElementById(btnNameGuardar);
+      var btnLoading = document.getElementById(btnNameLoading);
+      if (btnGuardar.classList.contains("d-none")) {
+        btnGuardar.classList.remove("d-none");
+        btnLoading.classList.add("d-none");
+      } else {
+        btnGuardar.classList.add("d-none");
+        btnLoading.classList.remove("d-none");
       }
     }
-  }
-  
 
-  // Función para enviar el formulario de empleado
-  function enviarFormEmpleado() {
-    loadingOnOff('btnGuardarEmpleado','btnLoadingEmpleado');
-    const form = document.getElementById('id-form-crear-empleado');
-    const idEmpleado = form.idEmpleado.value;
-    if(idEmpleado === '0'){
-      console.log("Va a ejecutar la funcion crear empleado");
-      google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarEmpleado','btnLoadingEmpleado');
-        form.reset();
-      })
-      .createEmpleado(form);
+    function loadingOnOffEdit(btnNameGuardar,btnNameLoading){
+      var btnGuardar = document.getElementById(btnNameGuardar);
+      var btnLoading = document.getElementById(btnNameLoading);
+      if (btnGuardar.classList.contains("d-none")) {
+        btnGuardar.classList.remove("d-none");
+        btnLoading.classList.add("d-none");
+      } else {
+        btnGuardar.classList.add("d-none");
+        btnLoading.classList.remove("d-none");
+      }
     }
-    else
-    {
-      google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarEmpleado','btnLoadingEmpleado');
-        form.reset();
-      })
-      .modifyEmpleado(form);
-    }
-    
-  }
 
-  // Función para enviar el formulario de vendedor
-  function enviarFormVendedor() {
-    loadingOnOff('btnGuardarVendedor','btnLoadingVendedor');
-    const form = document.getElementById('id-form-crear-vendedor');
-    const idVendedor = form.idVendedor.value;
-    if(idVendedor === '0'){
-      google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarVendedor','btnLoadingVendedor');
-        form.reset();
-      })
-      .createVendedor(form);
-    }
-    else
-    {
-      google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarVendedor','btnLoadingVendedor');
-        form.reset();
-      })
-      .modifyVendedor(form);
-    }
-  }
 
-  // Función para enviar el formulario de cliente
-  function enviarFormCliente() {
-    loadingOnOff('btnGuardarCliente','btnLoadingCliente');
-    const form = document.getElementById('id-form-crear-cliente');
-    const idCliente = form.idCliente.value;
-    if(idCliente === '0'){
+    let objectInfo = {};
+    window.addEventListener('load' , () => {
+      if (spinnerTablas.classList.contains("d-none")) {
+        spinnerTablas.classList.remove("d-none");
+      } else {
+        spinnerTablas.classList.add("d-none");
+      }
       google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarCliente','btnLoadingCliente');
-        form.reset();
+      .withSuccessHandler(object => {
+        objectInfo = object;
+        loadTable(objectInfo);
+        if (spinnerTablas.classList.contains("d-none")) {
+          spinnerTablas.classList.remove("d-none");
+        } else {
+          spinnerTablas.classList.add("d-none");
+        }
       })
-      .createCliente(form);
-    }
-    else
-    {
-      google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarCliente','btnLoadingCliente');
-        form.reset();
-      })
-      .modifyCliente(form);
-    }
-  }
+      .getData();
+    } );
 
-  // Función para enviar el formulario de programa
-  function enviarFormPrograma() {
-    loadingOnOff('btnGuardarPrograma','btnLoadingPrograma');
-    const form = document.getElementById('id-form-crear-programa');
-    const idPrograma = form.idPrograma.value;
-    if(idPrograma === '0'){
-      google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarPrograma','btnLoadingPrograma');
-        form.reset();
-      })
-      .createPrograma(form);
-    }
-    else
-    {
-      google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarPrograma','btnLoadingPrograma');
-        form.reset();
-      })
-      .modifyPrograma(form);
-    }
-  }
+    function loadTable ( object ){
+      //Listas
+      var arreglosClientes = object['cliente']['usersInfo_cliente'];
+      var arreglosVendedores = object['vendedor']['usersInfo_vendedor'];
+      var arreglosEmpleados = object['empleado']['usersInfo_empleado'];
+      var arreglosEventos = object['evento']['usersInfo_evento'];
+      var arreglosProgramas = object['programa']['usersInfo_programa'];
+      var option_select_clientes = "";
+      var option_select_vendedores = "";
+      var option_select_empleados = "";
+      var option_select_eventos = "";
+      var option_select_programas = "";
 
-  // Función para enviar el formulario de Evento
-  function enviarFormEvento() {
-    loadingOnOff('btnGuardarEvento','btnLoadingEvento');
-    const form = document.getElementById('id-form-crear-evento');
-    const idEvento = form.idEvento.value;
-    if(idEvento === '0'){
-      google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarEvento','btnLoadingEvento');
-        form.reset();
-      })
-      .createEvento(form);
-    }
-    else
-    {
-      google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarEvento','btnLoadingEvento');
-        form.reset();
-      })
-      .modifyEvento(form);
-    }
-  }
+      option_select_clientes = option_select_clientes + '<option value="0-NO APLICA" selected>0-NO APLICA</option>';
+      arreglosClientes.forEach(array => {
+        if (array.length >= 13) { 
+            option_select_clientes = option_select_clientes + '<option value="'+array[13]+'">' + array[13] + '</option>';
+        }
+      });
 
-  // Función para enviar el formulario de venta
-  function enviarFormVenta() {
-    loadingOnOff('btnGuardarVenta','btnLoadingVenta');
-    const form = document.getElementById('id-form-crear-venta');
-    const idVenta = form.idVenta.value;
-    if(idVenta === '0'){
-      google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarVenta','btnLoadingVenta');
-        form.reset();
-      })
-      .createVenta(form);
-    }
-    else
-    {
-      google.script.run
-      .withSuccessHandler(result => {
-        loadingOnOff('btnGuardarVenta','btnLoadingVenta');
-        form.reset();
-      })
-      .modifyVenta(form);
-    }
-  }
+      arreglosVendedores.forEach(array => {
+        if (array.length >= 14) { 
+            option_select_vendedores = option_select_vendedores + '<option value="'+array[14]+'">' + array[14] + '</option>';
+        }
+      });
 
-  
-  // Editar registros
-  function editarRegistroModal(button, nombreTabla){
+      arreglosEmpleados.forEach(array => {
+        if (array.length >= 12) { 
+            option_select_empleados = option_select_empleados + '<option value="'+array[12]+'">' + array[12] + '</option>';
+        }
+      });
 
-    const tableRow = button.parentNode.parentNode;
-    var id = tableRow.cells[0].innerHTML;
-    var dataRow;
-    console.log("NOMBRE DE LA TABLA");
-    console.log(nombreTabla);
+      arreglosEventos.forEach(array => {
+        if (array.length >= 18) { 
+            option_select_eventos = option_select_eventos + '<option value="'+array[18]+'">' + array[18] + '</option>';
+        }
+      });
 
-    google.script.run
-    .withSuccessHandler(object => {
-      console.log("ACA EL RESULTADO DE LA FUNCION GETDATAROW");
-      console.log(object);
+      option_select_programas = option_select_programas + '<option value="0-NO APLICA" selected>0-NO APLICA</option>';
+      arreglosProgramas.forEach(array => {
+        if (array.length >= 15) { 
+            option_select_programas = option_select_programas + '<option value="'+array[15]+'">' + array[15] + '</option>';
+        }
+      });
+
+      droplistVendedores.forEach(function(select) {
+        select.innerHTML = option_select_vendedores;
+      });
+      droplistEmpleados.forEach(function(select) {
+        select.innerHTML = option_select_empleados;
+      });
+      droplistClientes.forEach(function(select) {
+        select.innerHTML = option_select_clientes;
+      });
+      droplistEventos.forEach(function(select) {
+        select.innerHTML = option_select_eventos;
+      });
+      droplistProgramas.forEach(function(select) {
+        select.innerHTML = option_select_programas;
+      });
+
+      function capitalizeFirstLetter(string) {
+          string = string.replaceAll("_", ' ');
+          return string.charAt(0).toUpperCase() + string.slice(1);
+      }
       
-      dataRow = object;
-      console.log(dataRow);
-      console.log(dataRow[0][6]);
-      var createModal;
-    
-      switch (nombreTabla) {
-        case 'empleado':
-          createModal = bootstrap.Modal.getOrCreateInstance('#createModalEmpleado');
-          createModal.show();
+      for (const key in object) {
+        const value = object[key];
+        const headers = value['headers_'+key];
+        const usersInfo = value['usersInfo_'+key];
+        const tableName = '#tabla-'+key;
 
-          document.getElementById("idEmpleado").value = tableRow.cells[0].innerHTML;
-          document.getElementById("idPersonaEmpleado").value = tableRow.cells[1].innerHTML;
-          document.getElementById("nombreEmpleado").value =  tableRow.cells[2].innerHTML;
-          document.getElementById("apellidoEmpleado").value =  tableRow.cells[3].innerHTML;
-          document.getElementById("celularEmpleado").value = tableRow.cells[4].innerHTML;
-          document.getElementById("departamentoEmpleado").value = tableRow.cells[5].innerHTML;
-          document.getElementById("ciudadEmpleado").value = tableRow.cells[6].innerHTML;
-          document.getElementById("direccionEmpleado").value = tableRow.cells[7].innerHTML;
-          document.getElementById("emailEmpleado").value = tableRow.cells[8].innerHTML;
-          document.getElementById("salarioEmpleado").value = tableRow.cells[9].innerHTML;
-          document.getElementById("epsEmpleado").value = tableRow.cells[10].innerHTML;
-          document.getElementById("cargoEmpleado").value = tableRow.cells[11].innerHTML;
+        const formattedCols = headers.map( header => {
+            header = capitalizeFirstLetter(header);
+            return {'title':header}
+          });
+        formattedCols.push({ 'title': 'Acciones' });
+        // Modificar la data para incluir el código HTML en la columna "Acciones"
+        const newData = usersInfo.map(row => {
+          // Aquí debes modificar 'row' según la estructura de tu objeto 'usersInfo'
+          const actionsHTML = '<div id="id-edit-'+key+'-'+row[0]+'"> <i class="bi bi-pencil-square button-edit me-3" role="button" onclick="editarRegistroModal(this,nombreTabla=\''+key+'\')"> Edit</i></div>';
+          const actionLoading = '<div class="spinner-border d-none text-success" id="id-loading-'+key+'-'+row[0]+'" role="status" disabled><span class="sr-only">.</span></div>'
+          row.push(actionsHTML+actionLoading); // Agregar el código HTML a la fila
+          return row;
+        });
 
-          break;
-        case 'vendedor':
-          createModal = bootstrap.Modal.getOrCreateInstance('#createModalVendedor');
-          createModal.show();
+        
+        switch (key) {
+            case 'empleado':
+              var miTable = new DataTable(tableName,{
+                columns: formattedCols,
+                data: newData,
+                language: {
+                    lengthMenu: 'Mostrar _MENU_ registros por página',
+                    zeroRecords: 'Ningún registro encontrado',
+                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
+                    infoEmpty: 'Ningún registro encontrado',
+                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
+                    search: 'Buscar:',
+                    loadingRecords: 'Cargando...'
+                },
+                responsive: true,
+                layout: {
+                    topStart: {
+                        buttons: [
+                          {
+                            extend:'copy',
+                            text: '<i class="bi bi-clipboard-check-fill"></i>',
+                            titleAttr: 'Copiar',
+                            className: 'btn btn-secondary'
+                          },
+                          {
+                            extend:'excel',
+                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
+                            titleAttr: 'Exportar a excel',
+                            className: 'btn btn-success'
+                          }
+                        ]
+                    }
+                }
+              });
+              miTable.column(1).visible(false);
+              miTable.column(12).visible(false);
+              
+              break;
+            case 'vendedor':
+              var miTable = new DataTable(tableName,{
+                columns: formattedCols,
+                data: newData,
+                language: {
+                    lengthMenu: 'Mostrar _MENU_ registros por página',
+                    zeroRecords: 'Ningún registro encontrado',
+                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
+                    infoEmpty: 'Ningún registro encontrado',
+                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
+                    search: 'Buscar:',
+                    loadingRecords: 'Cargando...'
+                },
+                responsive: true,
+                layout: {
+                    topStart: {
+                        buttons: [
+                          {
+                            extend:'copy',
+                            text: '<i class="bi bi-clipboard-check-fill"></i>',
+                            titleAttr: 'Copiar',
+                            className: 'btn btn-secondary'
+                          },
+                          {
+                            extend:'excel',
+                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
+                            titleAttr: 'Exportar a excel',
+                            className: 'btn btn-success'
+                          }
+                        ]
+                    }
+                }
+              });
+              miTable.column(1).visible(false);
+              miTable.column(14).visible(false);
+              miTable.column(15).visible(false);
+              miTable.column(16).visible(false);
+              break;
+            case 'cliente':
+              var miTable = new DataTable(tableName,{
+                columns: formattedCols,
+                data: newData,
+                language: {
+                    lengthMenu: 'Mostrar _MENU_ registros por página',
+                    zeroRecords: 'Ningún registro encontrado',
+                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
+                    infoEmpty: 'Ningún registro encontrado',
+                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
+                    search: 'Buscar:',
+                    loadingRecords: 'Cargando...'
+                },
+                responsive: true,
+                layout: {
+                    topStart: {
+                        buttons: [
+                          {
+                            extend:'copy',
+                            text: '<i class="bi bi-clipboard-check-fill"></i>',
+                            titleAttr: 'Copiar',
+                            className: 'btn btn-secondary'
+                          },
+                          {
+                            extend:'excel',
+                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
+                            titleAttr: 'Exportar a excel',
+                            className: 'btn btn-success'
+                          }
+                        ]
+                    }
+                }
+              });
+              miTable.column(1).visible(false);
+              miTable.column(2).visible(false);
+              miTable.column(3).visible(false);
+              miTable.column(4).visible(false);
+              miTable.column(11).visible(false);
+              miTable.column(12).visible(false);
+              miTable.column(13).visible(false);
+              miTable.column(15).visible(false);
+              miTable.column(17).visible(false);
+              break;
+            case 'programa':
+              var miTable = new DataTable(tableName,{
+                columns: formattedCols,
+                data: newData,
+                language: {
+                    lengthMenu: 'Mostrar _MENU_ registros por página',
+                    zeroRecords: 'Ningún registro encontrado',
+                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
+                    infoEmpty: 'Ningún registro encontrado',
+                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
+                    search: 'Buscar:',
+                    loadingRecords: 'Cargando...'
+                },
+                responsive: true,
+                layout: {
+                    topStart: {
+                        buttons: [
+                          {
+                            extend:'copy',
+                            text: '<i class="bi bi-clipboard-check-fill"></i>',
+                            titleAttr: 'Copiar',
+                            className: 'btn btn-secondary'
+                          },
+                          {
+                            extend:'excel',
+                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
+                            titleAttr: 'Exportar a excel',
+                            className: 'btn btn-success'
+                          }
+                        ]
+                    }
+                },
+                order: [[0, 'desc']]
+              });
+              miTable.column(1).visible(false);
+              miTable.column(2).visible(false);
+              miTable.column(5).visible(false);
+              miTable.column(6).visible(false);
+              miTable.column(14).visible(false);
+              miTable.column(15).visible(false);
+              miTable.column(16).visible(false);
+              break;
+            case 'evento':
+              var miTable = new DataTable(tableName,{
+                columns: formattedCols,
+                data: newData,
+                language: {
+                    lengthMenu: 'Mostrar _MENU_ registros por página',
+                    zeroRecords: 'Ningún registro encontrado',
+                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
+                    infoEmpty: 'Ningún registro encontrado',
+                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
+                    search: 'Buscar:',
+                    loadingRecords: 'Cargando...'
+                },
+                responsive: true,
+                layout: {
+                    topStart: {
+                        buttons: [
+                          {
+                            extend:'copy',
+                            text: '<i class="bi bi-clipboard-check-fill"></i>',
+                            titleAttr: 'Copiar',
+                            className: 'btn btn-secondary'
+                          },
+                          {
+                            extend:'excel',
+                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
+                            titleAttr: 'Exportar a excel',
+                            className: 'btn btn-success'
+                          }
+                        ]
+                    }
+                },
+                order: [[0, 'desc']]
+              });
+              miTable.column(1).visible(false);
+              miTable.column(2).visible(false);
+              miTable.column(3).visible(false);
+              miTable.column(8).visible(false);
+              miTable.column(9).visible(false);
+              miTable.column(10).visible(false);
+              miTable.column(13).visible(false);
+              miTable.column(16).visible(false);
+              miTable.column(18).visible(false);
+              miTable.column(19).visible(false);
+              miTable.column(20).visible(false);
+              break;
+            case 'venta':
+              var miTable = new DataTable(tableName,{
+                columns: formattedCols,
+                data: newData,
+                language: {
+                    lengthMenu: 'Mostrar _MENU_ registros por página',
+                    zeroRecords: 'Ningún registro encontrado',
+                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
+                    infoEmpty: 'Ningún registro encontrado',
+                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
+                    search: 'Buscar:',
+                    loadingRecords: 'Cargando...'
+                },
+                responsive: true,
+                layout: {
+                    topStart: {
+                        buttons: [
+                          {
+                            extend:'copy',
+                            text: '<i class="bi bi-clipboard-check-fill"></i>',
+                            titleAttr: 'Copiar',
+                            className: 'btn btn-secondary'
+                          },
+                          {
+                            extend:'excel',
+                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
+                            titleAttr: 'Exportar a excel',
+                            className: 'btn btn-success'
+                          }
+                        ]
+                    }
+                },
+                order: [[0, 'desc']]
+              });
+              miTable.column(1).visible(false);
+              miTable.column(6).visible(false);
+              miTable.column(7).visible(false);
+              
+              break;
+            default:
+              break;
+        }
+      }
+      listaNombreTablas = ['empleado','vendedor','cliente','evento','programa','venta'];
+      // Iterar sobre la lista e imprimir cada elemento
+      listaNombreTablas.forEach(function(nombreTabla) {
+          elementNombreTabla = '[aria-controls="tabla-'+nombreTabla+'"]';
+          var botonesDt = document.querySelectorAll(elementNombreTabla);
+          // Verificar si se encontraron elementos
+          if (botonesDt.length > 0) {
+              // Tomar el primer elemento como referencia para el padre común
+              var padreComun = botonesDt[0].parentNode;
 
-          document.getElementById("idVendedor").value = tableRow.cells[0].innerHTML;
-          document.getElementById("idPersonaVendedor").value = tableRow.cells[1].innerHTML;
-          document.getElementById("nombreVendedor").value =  tableRow.cells[2].innerHTML;
-          document.getElementById("apellidoVendedor").value =  tableRow.cells[3].innerHTML;
-          document.getElementById("celularVendedor").value = tableRow.cells[4].innerHTML;
-          document.getElementById("departamentoVendedor").value = tableRow.cells[5].innerHTML;
-          document.getElementById("ciudadVendedor").value = tableRow.cells[6].innerHTML;
-          document.getElementById("direccionVendedor").value = tableRow.cells[7].innerHTML;
-          document.getElementById("emailVendedor").value = tableRow.cells[8].innerHTML;
-          document.getElementById("epsVendedor").value = tableRow.cells[9].innerHTML;
-          document.getElementById("cargoVendedor").value = tableRow.cells[10].innerHTML;
-          document.getElementById("metaVendedor").value = tableRow.cells[11].innerHTML;
-          document.getElementById("historicoVendedor").value = tableRow.cells[12].innerHTML;
-          document.getElementById("qtyVentasVendedor").value = tableRow.cells[13].innerHTML;
-          break;
-        case 'cliente':
-          createModal = bootstrap.Modal.getOrCreateInstance('#createModalCliente');
-          createModal.show();
-
-          document.getElementById("idCliente").value = tableRow.cells[0].innerHTML;
-          document.getElementById("idPersonaCliente").value = tableRow.cells[1].innerHTML;
-          document.getElementById("nombreCliente").value =  tableRow.cells[2].innerHTML;
-          document.getElementById("apellidoCliente").value =  tableRow.cells[3].innerHTML;
-          document.getElementById("celularCliente").value = tableRow.cells[4].innerHTML;
-          document.getElementById("departamentoCliente").value = tableRow.cells[5].innerHTML;
-          document.getElementById("ciudadCliente").value = tableRow.cells[6].innerHTML;
-          document.getElementById("direccionCliente").value = tableRow.cells[7].innerHTML;
-          document.getElementById("emailCliente").value = tableRow.cells[8].innerHTML;
-          document.getElementById("calificacionCliente").value = tableRow.cells[9].innerHTML;
-          document.getElementById("vendedorCliente").value = tableRow.cells[10].innerHTML;
-          document.getElementById("empleadoCliente").value = tableRow.cells[11].innerHTML;
-          document.getElementById("contacto_referenteCliente").value = tableRow.cells[12].innerHTML;
-          break;
-        case 'evento':
-
-          createModal = bootstrap.Modal.getOrCreateInstance('#createModalEvento');
-          createModal.show();
-
-          horaInicioEvento = tableRow.cells[5].innerHTML;
-          horaFinEvento = tableRow.cells[6].innerHTML;
-
-          if(horaInicioEvento.length === 4){
-            horaInicioEvento = '0'+horaInicioEvento;
+              // Verificar si se encontró un padre común
+              if (padreComun !== null) {
+                // Crear el botón fuera de la configuración de DataTables
+                var botonAgregar = document.createElement('button');
+                botonAgregar.textContent = '+ Add';
+                botonAgregar.className = 'btn btn-warning buttons-html5';
+                botonAgregar.setAttribute('data-bs-toggle', 'modal');
+                // Agregar el botón a donde desees en tu página botonesDataTable
+                var nombreModal =  '#createModal'+ nombreTabla.charAt(0).toUpperCase() + nombreTabla.slice(1);
+                botonAgregar.setAttribute('data-bs-target',nombreModal);
+                botonAgregar.onclick = btnAgregar(nombreTabla);
+                padreComun.appendChild(botonAgregar.cloneNode(true));
+              } else {
+              }
+          } else {
           }
-          if(horaFinEvento.length === 4){
-            horaFinEvento = '0'+horaFinEvento;
-          }
+      });
 
-          document.getElementById("idEvento").value = tableRow.cells[0].innerHTML;
-          document.getElementById("tipoEvento").value = tableRow.cells[2].innerHTML;
-          document.getElementById("estadoEvento").value = tableRow.cells[3].innerHTML;
-          document.getElementById("fechaEvento").value =  tableRow.cells[4].innerHTML;
-          document.getElementById("horaInicioEvento").value =  horaInicioEvento;
-          document.getElementById("horaFinEvento").value = horaFinEvento;
-          document.getElementById("correosEvento").value =  tableRow.cells[9].innerHTML;
-          document.getElementById("observacionesEvento").value = tableRow.cells[10].innerHTML;
-          document.getElementById("vendedorEvento").value = tableRow.cells[11].innerHTML;
-          document.getElementById("empleadoEvento").value = tableRow.cells[12].innerHTML;
-          document.getElementById("clienteEvento").value = tableRow.cells[13].innerHTML;
-          break;
-        case 'programa':
-          createModal = bootstrap.Modal.getOrCreateInstance('#createModalPrograma');
-          createModal.show();
+      
+    };
 
-          document.getElementById("idPrograma").value = tableRow.cells[0].innerHTML;
-          document.getElementById("idEventoPrograma").value = tableRow.cells[1].innerHTML;
-          document.getElementById("nombrePrograma").value = tableRow.cells[2].innerHTML;
-          document.getElementById("correosPrograma").value =  tableRow.cells[10].innerHTML;
-          document.getElementById("diasPrograma").value = tableRow.cells[11].innerHTML;
-          document.getElementById("premioPrograma").value = tableRow.cells[13].innerHTML;
-          document.getElementById("resultadoPrograma").value = tableRow.cells[15].innerHTML;
-          document.getElementById("eventoPrograma").value = tableRow.cells[16].innerHTML;
-          break;
-        case 'venta':
-          createModal = bootstrap.Modal.getOrCreateInstance('#createModalVenta');
-          createModal.show();
 
-          document.getElementById("idVenta").value = tableRow.cells[0].innerHTML;
-          document.getElementById("idEventoVenta").value = tableRow.cells[1].innerHTML;
-          document.getElementById("articuloVenta").value =  tableRow.cells[2].innerHTML;
-          document.getElementById("valorVenta").value =  tableRow.cells[3].innerHTML;
-          document.getElementById("modoPagoVenta").value = tableRow.cells[4].innerHTML;
-          document.getElementById("eventoVenta").value = tableRow.cells[5].innerHTML;
-          break;
-        default:
-          console.log('Caso no tenido en cuenta');
-          break;
-      }    
-    })
-    .getDataRow(id, nombreTabla);
+    // Función para boton Agregar
+    function btnAgregar(nombreTabla) {
+      const formName = 'id-form-crear-'+nombreTabla;
+      const form = document.getElementById(formName);
+      form.reset();
+      fechaInput.value = obtenerFechaActual();
+      horaInicioInput.value = obtenerHoraActual(0);
+      horaFinInput.value = obtenerHoraActual(1);
+    };
+
+    // Función para enviar el formulario de empleado
+    function enviarFormEmpleado() {
+      loadingOnOff('btnGuardarEmpleado','btnLoadingEmpleado');
+      const form = document.getElementById('id-form-crear-empleado');
+      const idEmpleado = form.idEmpleado.value;
+      if(idEmpleado === '0'){
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarEmpleado','btnLoadingEmpleado');
+          form.reset();
+          window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los colaboradores: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los colaboradores: " + error.message);
+      })
+        .createEmpleado(form);
+      }
+      else
+      {
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarEmpleado','btnLoadingEmpleado');
+          form.reset();
+          window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los colaboradores: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los colaboradores: " + error.message);
+      })
+        .modifyEmpleado(form);
+      }
+      
+    };
+
+    // Función para enviar el formulario de vendedor
+    function enviarFormVendedor() {
+      loadingOnOff('btnGuardarVendedor','btnLoadingVendedor');
+      const form = document.getElementById('id-form-crear-vendedor');
+      const idVendedor = form.idVendedor.value;
+      if(idVendedor === '0'){
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarVendedor','btnLoadingVendedor');
+          form.reset();
+          window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los asesores: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los asesores:  " + error.message);
+      })
+        .createVendedor(form);
+      }
+      else
+      {
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarVendedor','btnLoadingVendedor');
+          form.reset();
+          window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los asesores: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los asesores: " + error.message);
+      })
+        .modifyVendedor(form);
+      }
+    }
+
+    // Función para enviar el formulario de cliente
+    function enviarFormCliente() {
+      loadingOnOff('btnGuardarCliente','btnLoadingCliente');
+      const form = document.getElementById('id-form-crear-cliente');
+      const idCliente = form.idCliente.value;
+      if(idCliente === '0'){
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarCliente','btnLoadingCliente');
+          form.reset();
+          //window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los clientes: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los clientes: " + error.message);
+      })
+        .createCliente(form);
+      }
+      else
+      {
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarCliente','btnLoadingCliente');
+          form.reset();
+          window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los clientes: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los clientes: " + error.message);
+      })
+        .modifyCliente(form);
+      }
+    }
+
+    // Función para enviar el formulario de programa
+    function enviarFormPrograma() {
+      loadingOnOff('btnGuardarPrograma','btnLoadingPrograma');
+      const form = document.getElementById('id-form-crear-programa');
+      const idPrograma = form.idPrograma.value;
+      if(idPrograma === '0'){
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarPrograma','btnLoadingPrograma');
+          form.reset();
+          window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los programas: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los programas: " + error.message);
+      })
+        .createPrograma(form);
+      }
+      else
+      {
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarPrograma','btnLoadingPrograma');
+          form.reset();
+          window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los programas: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los programas: " + error.message);
+      })
+        .modifyPrograma(form);
+      }
+    }
+
+    // Función para enviar el formulario de Evento
+    function enviarFormEvento() {
+      loadingOnOff('btnGuardarEvento','btnLoadingEvento');
+      const form = document.getElementById('id-form-crear-evento');
+      const idEvento = form.idEvento.value;
+      if(idEvento === '0'){
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarEvento','btnLoadingEvento');
+          form.reset();
+          //window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los eventos: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los eventos: " + error.message);
+      })
+        .createEvento(form);
+      }
+      else
+      {
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarEvento','btnLoadingEvento');
+          form.reset();
+          window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los eventos: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los eventos: " + error.message);
+      })
+        .modifyEvento(form);
+      }
+    }
+
+    // Función para enviar el formulario de venta
+    function enviarFormVenta() {
+      loadingOnOff('btnGuardarVenta','btnLoadingVenta');
+      const form = document.getElementById('id-form-crear-venta');
+      const idVenta = form.idVenta.value;
+      if(idVenta === '0'){
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarVenta','btnLoadingVenta');
+          form.reset();
+          window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los ventas: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los ventas: " + error.message);
+      })
+        .createVenta(form);
+      }
+      else
+      {
+        google.script.run
+        .withSuccessHandler(result => {
+          loadingOnOff('btnGuardarVenta','btnLoadingVenta');
+          form.reset();
+          window.location.reload();
+        })
+        .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de los ventas: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de los ventas: " + error.message);
+      })
+        .modifyVenta(form);
+      }
+    }
+
     
+    // Editar registros
+    function editarRegistroModal(button, nombreTabla){
+
+      const tableRow = button.parentNode.parentNode.parentNode;
+      var id = tableRow.cells[0].innerHTML;
+      console.log("EL ID DE LA TABLA");
+      console.log(id);
+      var dataRow;
+      loadingOnOffEdit('id-edit-'+nombreTabla+'-'+id,'id-loading-'+nombreTabla+'-'+id);
+
+      google.script.run
+      .withSuccessHandler(dataRow => {
+        var createModal;
+      
+        switch (nombreTabla) {
+          case 'empleado':
+            createModal = bootstrap.Modal.getOrCreateInstance('#createModalEmpleado');
+            createModal.show();
+
+            document.getElementById("idEmpleado").value = id;
+            document.getElementById("idPersonaEmpleado").value = dataRow[0][0];
+            document.getElementById("nombreEmpleado").value =  dataRow[0][1];
+            document.getElementById("apellidoEmpleado").value =  dataRow[0][2];
+            document.getElementById("celularEmpleado").value = dataRow[0][3];
+            document.getElementById("departamentoEmpleado").value = dataRow[0][4];
+            document.getElementById("ciudadEmpleado").value = dataRow[0][5];
+            document.getElementById("direccionEmpleado").value = dataRow[0][6];
+            document.getElementById("emailEmpleado").value = dataRow[0][7];
+            document.getElementById("salarioEmpleado").value = dataRow[0][8];
+            document.getElementById("epsEmpleado").value = dataRow[0][9];
+            document.getElementById("cargoEmpleado").value = dataRow[0][10];
+
+            break;
+
+          case 'vendedor':
+            createModal = bootstrap.Modal.getOrCreateInstance('#createModalVendedor');
+            createModal.show();
+
+            document.getElementById("idVendedor").value = id;
+            document.getElementById("idPersonaVendedor").value = dataRow[0][0];
+            document.getElementById("nombreVendedor").value =  dataRow[0][1];
+            document.getElementById("apellidoVendedor").value =  dataRow[0][2];
+            document.getElementById("celularVendedor").value = dataRow[0][3];
+            document.getElementById("departamentoVendedor").value = dataRow[0][4];
+            document.getElementById("ciudadVendedor").value = dataRow[0][5];
+            document.getElementById("direccionVendedor").value = dataRow[0][6];
+            document.getElementById("emailVendedor").value = dataRow[0][7];
+            document.getElementById("epsVendedor").value = dataRow[0][8];
+            document.getElementById("metaVendedor").value = dataRow[0][10];
+            document.getElementById("idCalendarDemos").value = dataRow[0][14];
+            document.getElementById("idCalendarProgramas").value = dataRow[0][15];
+            if(dataRow[0][16]=="on"){
+              document.getElementById("activoVendedor").checked = true;
+            }
+            else{
+              document.getElementById("activoVendedor").checked = false;
+            }
+            break;
+
+          case 'cliente':
+            createModal = bootstrap.Modal.getOrCreateInstance('#createModalCliente');
+            createModal.show();
+
+            document.getElementById("idCliente").value = id;
+            document.getElementById("idPersonaCliente").value = dataRow[0][0];
+            document.getElementById("nombreCliente").value =  dataRow[0][4];
+            document.getElementById("apellidoCliente").value =  dataRow[0][5];
+            document.getElementById("celularCliente").value = dataRow[0][6];
+            document.getElementById("departamentoCliente").value = dataRow[0][7];
+            document.getElementById("ciudadCliente").value = dataRow[0][8];
+            document.getElementById("direccionCliente").value = dataRow[0][9];
+            document.getElementById("emailCliente").value = dataRow[0][10];
+            if(dataRow[0][11]=="on"){
+              document.getElementById("activoCliente").checked = true;
+            }
+            else{
+              document.getElementById("activoCliente").checked = false;
+            }
+            document.getElementById("vendedorCliente").value = dataRow[0][13];
+            document.getElementById("empleadoCliente").value = dataRow[0][14];
+            document.getElementById("contacto_referenteCliente").value = dataRow[0][15];
+            document.getElementById("origenCliente").value = dataRow[0][17];
+            document.getElementById("programaCliente").value = dataRow[0][18];
+            document.getElementById("nucleoCliente").value = dataRow[0][19];
+            break;
+
+          case 'programa':
+            createModal = bootstrap.Modal.getOrCreateInstance('#createModalPrograma');
+            createModal.show();
+            console.log("FECHA DEL PROGRAMA");
+            console.log(dataRow[0]);
+            document.getElementById("idPrograma").value = id;
+            document.getElementById("fechaPrograma").value = dataRow[0][3];
+            document.getElementById("clientePrograma").value = dataRow[0][13];
+            document.getElementById("vendedorPrograma").value = dataRow[0][16];
+            document.getElementById("premioPrograma").value = dataRow[0][8];
+            document.getElementById("resultadoPrograma").value = dataRow[0][10];
+            break;
+
+          case 'evento':
+
+            createModal = bootstrap.Modal.getOrCreateInstance('#createModalEvento');
+            createModal.show();
+
+            document.getElementById("idEvento").value = id;
+            document.getElementById("tipoEvento").value = dataRow[0][3];
+            document.getElementById("estadoEvento").value = dataRow[0][4];
+            document.getElementById("resetPersona").value = dataRow[0][5];
+            document.getElementById("resetMotivo").value = dataRow[0][6];
+            document.getElementById("fechaEvento").value =  dataRow[0][7];
+            document.getElementById("horaInicioEvento").value =  dataRow[0][8];
+            document.getElementById("horaFinEvento").value = dataRow[0][9];
+            document.getElementById("correosEvento").value =  dataRow[0][12];
+            document.getElementById("observacionesEvento").value = dataRow[0][13];
+            document.getElementById("vendedorEvento").value = dataRow[0][14];
+            document.getElementById("empleadoEvento").value = dataRow[0][15];
+            document.getElementById("clienteEvento").value = dataRow[0][16];
+            document.getElementById("programaEvento").value = dataRow[0][20];
+            break;
+          
+          case 'venta':
+            createModal = bootstrap.Modal.getOrCreateInstance('#createModalVenta');
+            createModal.show();
+
+            document.getElementById("idVenta").value = id;
+            document.getElementById("idEventoVenta").value = dataRow[0][0];
+            document.getElementById("articuloVenta").value =  dataRow[0][1];
+            document.getElementById("valorVenta").value =  dataRow[0][2];
+            document.getElementById("modoPagoVenta").value = dataRow[0][3];
+            document.getElementById("eventoVenta").value = dataRow[0][4];
+            break;
+
+          default:
+            break;
+        }
+        loadingOnOffEdit('id-edit-'+nombreTabla+'-'+id,'id-loading-'+nombreTabla+'-'+id);
+
+      })
+      .getDataRow(id, nombreTabla);
+      
+    }
+
+    function generarReporteExcel(){
+      loadingOnOff('id-btn-reporte-excel','id-btn-reporte-excel-loading');
+      let elementFechaReporteExcelInicio = document.getElementById('fechaReporteExcelInicio');
+      let elementFechaReporteExcelFin = document.getElementById('fechaReporteExcelFin');
+      var fechaReporteExcelInicio = elementFechaReporteExcelInicio.value;
+      var fechaReporteExcelFin = elementFechaReporteExcelFin.value;
+      google.script.run
+      .withSuccessHandler(result => {
+        loadingOnOff('id-btn-reporte-excel','id-btn-reporte-excel-loading');
+        //window.location.reload();
+      })
+      .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error al generar el reporte:", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error al generar el reporte: " + error.message);
+      })
+      .generarReporte(fechaReporteExcelInicio,fechaReporteExcelFin);
+    }
+
+  } catch (error) {
+    // Manejo de la excepción
+    alert("Se ha producido un error: " + error.message);
   }
 
 </script>
