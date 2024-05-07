@@ -1,27 +1,26 @@
-
-// Obtener el valor de la celda anterior en la columna A
-//var celdaAnterior = hoja.getRange(hoja.getLastRow(), 1).getValue();
-
 function createEmpleado(form) {
 
-  console.log(form)
-
-  console.log("SI ENTRA A LA FUNCION");
+  for (var key in form) {
+    if (form.hasOwnProperty(key)) { // Verifica si la propiedad pertenece al objeto directamente
+      if (form[key] === "") { // Verifica si el valor de la propiedad está vacío
+        form[key] = "NULL"; // Asigna "NULL" si el valor está vacío
+      }
+      else{
+        if (typeof form[key] === "string") {
+          form[key] = form[key].trim();
+        }
+      }
+    }
+  }
 
   var idEmpleadoFlag = form.idEmpleado;
   var lrPersona=sheetPersona.getLastRow()+1;
-  console.log("EN LA FILA"+lrPersona);
   var lrEmpleado=sheetEmpleado.getLastRow()+1;
-  console.log("EN LA FILA"+lrEmpleado);
 
   if(idEmpleadoFlag === '0'){
-    console.log(form);
     var idPersona = createNewId(sheetPersona);
     var idEmpleado = createNewId(sheetEmpleado);
 
-
-    console.log("va a crear una nueva persona");
-    console.log("EN LA FILA"+lrPersona);
     sheetPersona.appendRow([
       idPersona,
       form.nombreEmpleado.toUpperCase(),
@@ -34,7 +33,6 @@ function createEmpleado(form) {
       '=$A'+lrPersona+'&"-"&$B'+lrPersona+'&"-"&$C'+lrPersona+'&"-"&$D'+lrPersona
     ]);
 
-    console.log("Supuestamente creó la persona en la fila "+lrPersona);
     sheetEmpleado.appendRow([
       idEmpleado,
       idPersona,
@@ -50,7 +48,6 @@ function createEmpleado(form) {
       form.cargoEmpleado.toUpperCase(),
       '=$A'+lrEmpleado+'&"-"&VLOOKUP($B'+lrEmpleado+';tabla_persona;9;0)'
     ]);
-    console.log("Supuestamente creó el empleado en la fila "+lrEmpleado);
 
     return "Nuevo empleado agregado a la base de datos";
   }
@@ -62,10 +59,27 @@ function createEmpleado(form) {
 
 function createVendedor(form){
 
+  console.log("SI ENTRA EN LAS FUNCIONES VENDEDOR CREATE");
+
+  for (var key in form) {
+    if (form.hasOwnProperty(key)) { // Verifica si la propiedad pertenece al objeto directamente
+      if (form[key] === "") { // Verifica si el valor de la propiedad está vacío
+        form[key] = "NULL"; // Asigna "NULL" si el valor está vacío
+      }
+      else{
+        if (typeof form[key] === "string") {
+          form[key] = form[key].trim();
+        }
+      }
+    }
+  }
+
+  console.log("VALOR DE SWITCH");
+  console.log(form);
+
   var idVendedorFlag = form.idVendedor;
   var lrPersona=sheetPersona.getLastRow()+1;
   var lrVendedor=sheetVendedor.getLastRow()+1;
-  console.log(form);
 
   if(idVendedorFlag == '0'){
     var idPersona = createNewId(sheetPersona);
@@ -80,7 +94,7 @@ function createVendedor(form){
       form.ciudadVendedor.toUpperCase(),
       form.direccionVendedor.toUpperCase(),
       form.emailVendedor.toLowerCase(),
-      '=$A'+lrPersona+'&"-"&$B'+lrPersona+'&"-"&$C'+lrPersona+'&"-"&$D'+lrPersona
+      '=$A'+lrPersona+'&"-"&$B'+lrPersona+'&"-"&$C'+lrPersona+'&"-"&$H'+lrPersona
     ]);
     sheetVendedor.appendRow([
       idVendedor,
@@ -93,11 +107,14 @@ function createVendedor(form){
       '=VLOOKUP($B'+lrVendedor+';tabla_persona;7;0)',
       '=VLOOKUP($B'+lrVendedor+';tabla_persona;8;0)',
       form.epsVendedor.toUpperCase(),
-      form.cargoVendedor.toUpperCase(),
+      'VENDEDOR',
       form.metaVendedor,
-      form.historicoVendedor,
-      form.qtyVentasVendedor,
-      '=$A'+lrVendedor+'&"-"&VLOOKUP($B'+lrVendedor+';tabla_persona;9;0)'
+      '=SUMIF(venta!G:G;A'+lrVendedor+';venta!D:D)',
+      '=COUNTIF(venta!G:G;A'+lrVendedor+')',
+      '=$A'+lrVendedor+'&"-"&VLOOKUP($B'+lrVendedor+';tabla_persona;9;0)',
+      form.idCalendarDemos,
+      form.idCalendarProgramas,
+      String(form.activoVendedor)
     ]);
 
     return "Nuevo vendedor agregado a la base de datos";
@@ -110,6 +127,24 @@ function createVendedor(form){
 
 function createCliente(form){
 
+  console.log("SI ENTRA EN LAS FUNCIONES CLIENTE CREATE");
+
+  for (var key in form) {
+    if (form.hasOwnProperty(key)) { // Verifica si la propiedad pertenece al objeto directamente
+      if (form[key] === "") { // Verifica si el valor de la propiedad está vacío
+        form[key] = "NULL"; // Asigna "NULL" si el valor está vacío
+      }
+      else{
+        if (typeof form[key] === "string") {
+          form[key] = form[key].trim();
+        }
+      }
+    }
+  }
+
+  console.log("VALOR DE SWITCH");
+  console.log(form.activoCliente);
+
   var idClienteFlag = form.idCliente;
   var lrPersona=sheetPersona.getLastRow()+1;
   var lrCliente=sheetCliente.getLastRow()+1;
@@ -117,7 +152,6 @@ function createCliente(form){
   var idEmpleado = form.empleadoCliente.split('-')[0];
   var idContactoReferente = form.contacto_referenteCliente.split('-')[0];
   var idPrograma = form.programaCliente.split('-')[0];
-  console.log(form);
 
   if(idClienteFlag == '0'){
     var idPersona = createNewId(sheetPersona);
@@ -147,13 +181,15 @@ function createCliente(form){
       '=VLOOKUP($B'+lrCliente+';tabla_persona;6;0)',
       '=VLOOKUP($B'+lrCliente+';tabla_persona;7;0)',
       '=VLOOKUP($B'+lrCliente+';tabla_persona;8;0)',
-      form.calificacionCliente,
+      String(form.activoCliente),
       '=$A'+lrCliente+'&"-"&VLOOKUP($B'+lrCliente+';tabla_persona;9;0)',
       '=VLOOKUP($C'+lrCliente+';tabla_vendedor;15;0)',
       '=VLOOKUP($D'+lrCliente+';tabla_empleado;13;0)',
-      '=IF($E'+lrCliente+'="null";"NO APLICA";VLOOKUP($E'+lrCliente+';tabla_cliente;14;0))',
+      '=IF($E'+lrCliente+'=0;"0-NO APLICA";VLOOKUP($E'+lrCliente+';tabla_cliente;14;0))',
       idPrograma,
-      form.origenCliente.toUpperCase()
+      form.origenCliente.toUpperCase(),
+      '=IF($R'+lrCliente+'=0;"0-NO APLICA";VLOOKUP($R'+lrCliente+';tabla_programa;16;0))',
+      form.nucleoCliente.toUpperCase()
     ]);
 
     return "Nuevo cliente agregado a la base de datos";
@@ -164,18 +200,142 @@ function createCliente(form){
   }
 };
 
+function createPrograma(form){
+
+  for (var key in form) {
+    if (form.hasOwnProperty(key)) { // Verifica si la propiedad pertenece al objeto directamente
+      if (form[key] === "") { // Verifica si el valor de la propiedad está vacío
+        form[key] = "NULL"; // Asigna "NULL" si el valor está vacío
+      }
+      else{
+        if (typeof form[key] === "string") {
+          form[key] = form[key].trim();
+        }
+      }
+    }
+  }
+
+  var idProgramaFlag = form.idPrograma;
+  var lrPrograma=sheetPrograma.getLastRow()+1;
+  var idCliente = form.clientePrograma.split('-')[0];
+  var idVendedor = form.vendedorPrograma.split('-')[0];
+  if(idProgramaFlag == '0'){
+    var idPrograma = createNewId(sheetPrograma);
+    const filaCliente = buscarFila(idCliente,sheetCliente);
+    var cliente = sheetCliente.getRange("N"+filaCliente).getValue();
+    var nombrePrograma = idPrograma + '-PROGRAMA 4 EN 14-'+cliente;
+    // PROCESO FECHA
+    // Convertir la cadena de fecha en un objeto Date
+    var fechaForm = new Date(form.fechaPrograma);
+
+    // Sumar 14 días a la fecha
+    fechaForm.setDate(fechaForm.getDate() + 14);
+
+    // Formatear la nueva fecha en el mismo formato de string
+    var nuevaFechaString = fechaForm.toISOString().split('T')[0];
+    // FIN PROCESO FECHA
+    var partes = nuevaFechaString.split("-");
+    var fechaProgramaFormated = partes[1] + "/" + partes[2] + "/" + partes[0];
+    var fechaInicioPrograma = String(fechaProgramaFormated) + ' ' + '10:00';
+    var fechaFinPrograma = String(fechaProgramaFormated) + ' ' + '11:00';
+    
+    // Para ID Calendar vendedor
+    var filaVendedor = buscarFila(idVendedor,sheetVendedor);
+    var idCalendarPrograma = sheetVendedor.getRange("Q"+filaVendedor).getValue();
+
+    // CREACION DEL EVENTO EN CALENDAR
+    var idEventoCalendar = crearEventoCalendar(idCalendarPrograma,nombrePrograma,fechaInicioPrograma,fechaFinPrograma,'',"FIN PROGRAMA 4 EN 14");
+    sheetPrograma.appendRow([
+      idPrograma,
+      idCliente,
+      idVendedor,
+      '4 EN 14',
+      form.fechaPrograma,
+      '=TEXT($E'+lrPrograma+'+14;"mm/dd/yyyy")&" 10:00"',
+      '=TEXT($E'+lrPrograma+'+14;"mm/dd/yyyy")&" 11:00"',
+      14,
+      '=TODAY()-$E'+lrPrograma,
+      form.premioPrograma,
+      '=IF($E'+lrPrograma+'-TODAY()>-1;"ACTIVO";"VENCIDO")',
+      form.resultadoPrograma,
+      '=COUNTIF(cliente!R:R;"="&A'+lrPrograma+')',
+      '=COUNTIFS(cliente!R:R;"="&A'+lrPrograma+';cliente!M:M;"=on")',
+      '=VLOOKUP(B'+lrPrograma+';tabla_cliente;14;0)',
+      '=A'+lrPrograma+'&"-"&D'+lrPrograma+'&"-"&O'+lrPrograma,
+      idEventoCalendar,
+      '=VLOOKUP($C'+lrPrograma+';tabla_vendedor;15;0)'
+    ]);
+
+    return "Nuevo programa agregado a la base de datos";
+  }
+  else
+  {
+
+  }
+};
+
 function createEvento(form){
+
+  for (var key in form) {
+    if (form.hasOwnProperty(key)) { // Verifica si la propiedad pertenece al objeto directamente
+      if (form[key] === "") { // Verifica si el valor de la propiedad está vacío
+        form[key] = "NULL"; // Asigna "NULL" si el valor está vacío
+      }
+      else{
+        if (typeof form[key] === "string") {
+          form[key] = form[key].trim();
+        }
+      }
+    }
+  }
 
   var idEventoFlag = form.idEvento;
   var idVendedor = form.vendedorEvento.split('-')[0];
   var idEmpleado = form.empleadoEvento.split('-')[0];
   var idCliente = form.clienteEvento.split('-')[0];
+  var idPrograma = form.programaEvento.split('-')[0];
   var nombreEvento = form.tipoEvento +" // "+ form.clienteEvento;
   var partes = form.fechaEvento.split("-");
   var fechaEventoFormated = partes[1] + "/" + partes[2] + "/" + partes[0];
   var fechaInicioEvento = String(fechaEventoFormated) + ' ' + String(form.horaInicioEvento);
-  var fechaFinEvento = String(fechaEventoFormated) + ' ' + String(form.horaInicioEvento);
-  var idEventoCalendar = crearEventoCalendar(nombreEvento,fechaInicioEvento,fechaFinEvento,form.correosEvento,form.observacionesEvento);
+  var fechaFinEvento = String(fechaEventoFormated) + ' ' + String(form.horaFinEvento);
+  // Datos del cliente
+  const filaCliente = buscarFila(idCliente,sheetCliente);
+  var cliente = sheetCliente.getRange("F"+filaCliente).getValue()+" "+sheetCliente.getRange("G"+filaCliente).getValue();
+  var celularCliente = sheetCliente.getRange("H"+filaCliente).getValue();
+  var departamentoCliente = sheetCliente.getRange("I"+filaCliente).getValue();
+  var ciudadCliente = sheetCliente.getRange("J"+filaCliente).getValue();
+  var direccionCliente = sheetCliente.getRange("K"+filaCliente).getValue();
+  var contactoRef = sheetCliente.getRange("Q"+filaCliente).getValue();
+  var origenCliente = sheetCliente.getRange("S"+filaCliente).getValue();
+  var nucleoCliente = sheetCliente.getRange("U"+filaCliente).getValue();
+  var programaCliente =  sheetCliente.getRange("T"+filaCliente).getValue();
+  var asesorCliente =  sheetCliente.getRange("O"+filaCliente).getValue();
+
+  var miDescripcion = "<font color='#9000CB'><b>Cliente:</b></font>&emsp;"+cliente+"<br>"+
+  "<font color='#EAA300'><b>Celular:</b></font>&emsp;"+celularCliente+"<br>"+
+  "<font color='#9000CB'><b>Departamento:</b></font>&emsp;"+departamentoCliente+"<br>"+
+  "<font color='#EAA300'><b>Ciudad:</b></font>&emsp;"+ciudadCliente+"<br>"+
+  "<font color='#9000CB'><b>Dirección:</b></font>&emsp;"+direccionCliente+"<br>"+
+  "<font color='#EAA300'><b>Contacto Referente:</b></font>&emsp;"+contactoRef+"<br>"+
+  "<font color='#9000CB'><b>Origen:</b></font>&emsp;"+origenCliente+"<br>"+
+  "<font color='#EAA300'><b>Nucleo:</b></font>&emsp;"+nucleoCliente+"<br>"+
+  "<font color='#9000CB'><b>Programa:</b></font>&emsp;"+programaCliente+"<br>"+
+  "<font color='#EAA300'><b>Asesor:</b></font>&emsp;"+asesorCliente+"<br>"+
+  "<font color='#9000CB'><b>Observaciones:</b></font>&emsp;"+form.observacionesEvento+"<br>";
+
+  // Para ID Calendar vendedor
+  var filaVendedor = buscarFila(idVendedor,sheetVendedor);
+  var idCalendarEvento = sheetVendedor.getRange("P"+filaVendedor).getValue();
+  console.log("ESTE ES EL ID DEL VENDEDOR CON ID: "+idVendedor);
+  console.log("CALENDAR ID: "+idCalendarEvento);
+  var correos = "";
+  if(form.correosEvento.toUpperCase() != "NULL"){
+    correos = form.correosEvento;
+  }
+  
+
+  var idEventoCalendar = crearEventoCalendar(idCalendarEvento, nombreEvento,fechaInicioEvento,fechaFinEvento,correos,miDescripcion);
   //arreglar formato de la hora
   var horaInicioEvento = form.horaInicioEvento;
   var horaFinEvento = form.horaFinEvento;
@@ -185,6 +345,9 @@ function createEvento(form){
   if(form.horaFinEvento.length === 4){
     horaFinEvento = '0'+horaFinEvento;
   }
+  console.log("HORAS DE INICIO Y FIN");
+  console.log(horaInicioEvento);
+  console.log(horaFinEvento);
 
 
   if(idEventoFlag == '0'){
@@ -196,21 +359,24 @@ function createEvento(form){
       idVendedor,
       idEmpleado,
       idCliente,
-      '=F'+lr+'&" // "&Q'+lr,
       form.tipoEvento.toUpperCase(),
       form.estadoEvento.toUpperCase(),
+      form.resetPersona.toUpperCase(),
+      form.resetMotivo.toUpperCase(),
       form.fechaEvento,
       horaInicioEvento,
       horaFinEvento,
-      '=TEXT($H'+lr+';"mm/dd/yyyy"&" "&TEXT($I'+lr+';"hh:mm"))',
-      '=TEXT($H'+lr+';"mm/dd/yyyy"&" "&TEXT($J'+lr+';"hh:mm"))',
+      '=TEXT($I'+lr+';"mm/dd/yyyy"&" "&TEXT($J'+lr+';"hh:mm"))',
+      '=TEXT($I'+lr+';"mm/dd/yyyy"&" "&TEXT($K'+lr+';"hh:mm"))',
       form.correosEvento.toLowerCase(),
       form.observacionesEvento,
       '=VLOOKUP($B'+lr+';tabla_vendedor;15;0)',
       '=VLOOKUP($C'+lr+';tabla_empleado;13;0)',
       '=VLOOKUP($D'+lr+';tabla_cliente;14;0)',
-      '=A'+lr+'&" - "&E'+lr+'',
-      idEventoCalendar
+      '=A'+lr+'&" - "&E'+lr+'&" - "&R'+lr,
+      idEventoCalendar,
+      idPrograma,
+      '=IF($U'+lr+'=0;"0-NO APLICA";VLOOKUP($U'+lr+';tabla_programa;16;0))'
     ]);
 
     return "Nuevo seguimiento agregado a la base de datos";
@@ -221,66 +387,24 @@ function createEvento(form){
   }
 };
 
-function createPrograma(form){
-
-  var idProgramaFlag = form.idPrograma;
-  var lrPrograma=sheetPrograma.getLastRow()+1;
-  var idEvento = form.eventoPrograma.split('-')[0];
-  var nombreEvento = form.nombrePrograma +" // "+ form.eventoPrograma;
-  var filaEvento = buscarFila(idEvento,sheetEvento);
-  var fechaInicioEventoS = sheetEvento.getRange("K"+filaEvento).getValue();
-  var fechaInicioEventoO = new Date(fechaInicioEventoS);
-  fechaInicioEventoO.setDate(fechaInicioEventoO.getDate() + parseInt(form.diasPrograma));
-  var fechaInicioEvento = (fechaInicioEventoO.getMonth() + 1) + "/" + fechaInicioEventoO.getDate() + "/" + fechaInicioEventoO.getFullYear() + " " + fechaInicioEventoO.getHours() + ":" + ("0" + fechaInicioEventoO.getMinutes()).slice(-2);
-  var fechaFinEventoS = sheetEvento.getRange("L"+filaEvento).getValue();
-  var fechaFinEventoO = new Date(fechaFinEventoS);
-  fechaFinEventoO.setDate(fechaFinEventoO.getDate() + parseInt(form.diasPrograma));
-  var fechaFinEvento = (fechaFinEventoO.getMonth() + 1) + "/" + fechaFinEventoO.getDate() + "/" + fechaFinEventoO.getFullYear() + " " + fechaFinEventoO.getHours() + ":" + ("0" + fechaFinEventoO.getMinutes()).slice(-2);
-  console.log('FECHAS DEL PROGRAMA OBTENIDAS DEL EVENTO');
-  console.log(fechaInicioEvento);
-  console.log(fechaFinEvento);
-  var idEventoCalendar = crearEventoCalendar(nombreEvento,fechaInicioEvento,fechaFinEvento,form.correosPrograma,"Fin del evento");
-
-  if(idProgramaFlag == '0'){
-    var idPrograma = createNewId(sheetPrograma);
-    sheetPrograma.appendRow([
-      idPrograma,
-      idEvento,
-      form.nombrePrograma.toUpperCase(),
-      '=C'+lrPrograma+'&" // "&Q'+lrPrograma,
-      '=VLOOKUP($B'+lrPrograma+';tabla_evento;8;0)',
-      '=VLOOKUP($B'+lrPrograma+';tabla_evento;9;0)',
-      '=VLOOKUP($B'+lrPrograma+';tabla_evento;10;0)',
-      '=E'+lrPrograma+'+L'+lrPrograma,
-      '=TEXT($H'+lrPrograma+';"mm/dd/yyyy"&" "&TEXT($F'+lrPrograma+';"hh:mm"))',
-      '=TEXT($H'+lrPrograma+';"mm/dd/yyyy"&" "&TEXT($G'+lrPrograma+';"hh:mm"))',
-      form.correosPrograma,
-      form.diasPrograma,
-      '=TODAY()-E'+lrPrograma,
-      form.premioPrograma.toUpperCase(),
-      '=IF(H'+lrPrograma+'-TODAY()>-1;"ACTIVO";"VENCIDO")',
-      form.resultadoPrograma.toUpperCase(),
-      '=VLOOKUP($B'+lrPrograma+';tabla_evento;18;0)',
-      '=COUNTIF(cliente!R:R;"="&A'+filaPrograma+')',
-      '=A'+filaPrograma+'&" - "&D'+filaPrograma,
-      idEventoCalendar
-    ]);
-
-    return "Nuevo programa agregado a la base de datos";
-  }
-  else
-  {
-
-  }
-};
-
 function createVenta(form){
+
+  for (var key in form) {
+    if (form.hasOwnProperty(key)) { // Verifica si la propiedad pertenece al objeto directamente
+      if (form[key] === "") { // Verifica si el valor de la propiedad está vacío
+        form[key] = "NULL"; // Asigna "NULL" si el valor está vacío
+      }
+      else{
+        if (typeof form[key] === "string") {
+          form[key] = form[key].trim();
+        }
+      }
+    }
+  }
 
   var idVentaFlag = form.idVenta;
   var lrVenta=sheetVenta.getLastRow()+1;
   var idEvento = form.eventoVenta.split('-')[0];
-
-  console.log(form);
 
   if(idVentaFlag == '0'){
 
@@ -292,10 +416,10 @@ function createVenta(form){
       form.articuloVenta.toUpperCase(),
       form.valorVenta,
       form.modoPagoVenta,
-      '=VLOOKUP(B'+lrVenta+';tabla_evento;18;0)',
+      '=VLOOKUP(B'+lrVenta+';tabla_evento;19;0)',
       '=VLOOKUP(B'+lrVenta+';tabla_evento;2;0)',
       '=VLOOKUP($G'+lrVenta+';tabla_vendedor;15;0)',
-      '=VLOOKUP($G'+lrVenta+';tabla_vendedor;8;0)'
+      '=VLOOKUP($B'+lrVenta+';tabla_evento;9;0)'
     ]);
 
     return "Nueva venta agregado a la base de datos";
@@ -321,8 +445,11 @@ function createNewId(mySheet){
   return maxId + 1;
 }
 
-function crearEventoCalendar(nombreEvento, fechaInicio, fechaFin, correos, descripcion){
-  var event = CalendarApp.getDefaultCalendar().createEvent(
+function crearEventoCalendar(idCalendar, nombreEvento, fechaInicio, fechaFin, correos, descripcion){
+
+  var calendario = CalendarApp.getCalendarById(idCalendar);
+
+  var event = calendario.createEvent(
     nombreEvento,
     new Date(fechaInicio),
     new Date(fechaFin),
