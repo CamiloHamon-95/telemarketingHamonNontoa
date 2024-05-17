@@ -1,14 +1,52 @@
 <script defer>
   try {
+    var miUrlUniversal = '';
+    
+    retrieveDataSheets();   
+
     var botones = document.querySelectorAll('.btn-main');
     var droplistClientes = document.querySelectorAll('.cliente-array');
     var droplistEmpleados = document.querySelectorAll('.empleado-array');
     var droplistVendedores = document.querySelectorAll('.vendedor-array');
     var droplistEventos = document.querySelectorAll('.evento-array');
     var droplistProgramas = document.querySelectorAll('.programa-array');
+    var droplistEstadoEventos = document.querySelectorAll('.estado-evento-array');
     var sectionsTables = document.querySelectorAll('.sections-tables');
     var sectionEventos = document.getElementById("evento-section");
-    var spinnerTablas = document.getElementById('spinner-tabla-evento');
+    var spinnerTablas = document.querySelectorAll('.spinner-tabla');
+    var fechaInput = document.getElementById("fechaEvento");
+    var fechaPrograma = document.getElementById('fechaPrograma');
+    var horaInicioInput = document.getElementById('horaInicioEvento');
+    var horaFinInput = document.getElementById('horaFinEvento');
+    var btnEditClient = document.getElementById("btnEditClient");
+    var btnEventoLink = document.getElementById("eventoBtn");
+
+    btnEventoLink.style.color = 'black';
+    btnEventoLink.style.backgroundColor = 'yellow';
+    
+
+    var listaEstadosDemo = [
+      'VENTA',
+      'EN PROCESO',
+      '90',
+      'RESET',
+      'RESET REPROGRAMADO'
+    ];
+    var listaEstadosMantenimiento = [
+      'VENTA',
+      'MNT REALIZADO',
+      'EN PROCESO',
+      'RESET',
+      'RESET REPROGRAMADO'
+    ];
+    var listaEstadosSeguimiento = [
+      'ACTIVADO',
+      'AGENDADO',
+      'RESET',
+      'RESET REPROGRAMADO',
+      'NO INTERESA',
+      'CRP'
+    ];
     
 
     sectionsTables.forEach(function(element) {
@@ -16,12 +54,6 @@
     });
 
     sectionEventos.style.display = 'block';
-
-    
-
-    // Obtener referencias a los elementos de entrada
-    var horaInicioInput = document.getElementById("horaInicioEvento");
-    var horaFinInput = document.getElementById("horaFinEvento");
 
     // Agregar un evento 'change' a cada campo de entrada para detectar cambios
     horaInicioInput.addEventListener("change", function() {
@@ -43,9 +75,13 @@
 
         // Comparar las horas y mostrar un mensaje de error si la hora de finalización es menor que la hora de inicio
         if (fechaFin <= fechaInicio) {
-            alert("La hora de finalización debe ser posterior a la hora de inicio");
-            // Restablecer el valor del campo de hora de finalización
-            horaFinInput.value = "";
+
+          horaFinInput.style.background="#FFC7C0";
+          btnGuardarEvento.disabled = true;
+
+        }else{
+          horaFinInput.style.background="#B0FF8C";
+          btnGuardarEvento.disabled = false;
         }
     }
 
@@ -63,25 +99,12 @@
     // Obtener la hora actual en formato HH:MM
     function obtenerHoraActual(adicion) {
       var now = new Date();
-      var mihora = now.getHours()+adicion;
-      var miminuto =now.getMinutes()+5;
+      var mihora = now.getHours();
+      var miminuto =now.getMinutes()+1+adicion;
       var hora = mihora.toString().padStart(2, '0');
       var minutos = miminuto.toString().padStart(2, '0');
       return hora + ":" + minutos;
     }
-
-    // Obtener referencias a los elementos de entrada
-    var fechaInput = document.getElementById("fechaEvento");
-    var fechaPrograma = document.getElementById("fechaPrograma");
-    var horaInicioInput = document.getElementById("horaInicioEvento");
-    var horaFinInput = document.getElementById("horaFinEvento");
-
-    // Asignar la fecha y hora actuales como valores predeterminados
-    
-    fechaInput.value = obtenerFechaActual();
-    horaInicioInput.value = obtenerHoraActual(0);
-    horaFinInput.value = obtenerHoraActual(1);
-    fechaPrograma.value = obtenerFechaActual();
 
     // -----------------------------------------------------------------------------
     // -------------- Diligenciamiento del correo ----------------------------------
@@ -127,19 +150,131 @@
         // Establecer la nueva fecha en el elemento de fecha de fin
         fechaFinInput.value = fechaFin;
     });
+    // -----------------------------------------------------------------------------
+    document.getElementById("busquedaProgramaCliente").addEventListener("input", function() {
+      var input, filter, select, options, i, option;
+      input = document.getElementById("busquedaProgramaCliente");
+      filter = input.value.toUpperCase();
+      select = document.getElementById("programaCliente");
+      options = select.getElementsByTagName("option");
+      for (i = 0; i < options.length; i++) {
+        option = options[i];
+        if (option.textContent.toUpperCase().indexOf(filter) > -1) {
+          option.style.display = "";
+        } else {
+          option.style.display = "none";
+        }
+      }
+    });
+    document.getElementById("busquedaClienteEvento").addEventListener("input", function() {
+      var input, filter, select, options, i, option;
+      input = document.getElementById("busquedaClienteEvento");
+      filter = input.value.toUpperCase();
+      select = document.getElementById("clienteEvento");
+      options = select.getElementsByTagName("option");
+      for (i = 0; i < options.length; i++) {
+        option = options[i];
+        if (option.textContent.toUpperCase().indexOf(filter) > -1) {
+          option.style.display = "";
+        } else {
+          option.style.display = "none";
+        }
+      }
+    });
+    document.getElementById("busquedaClientePrograma").addEventListener("input", function() {
+      var input, filter, select, options, i, option;
+      input = document.getElementById("busquedaClientePrograma");
+      filter = input.value.toUpperCase();
+      select = document.getElementById("clientePrograma");
+      options = select.getElementsByTagName("option");
+      for (i = 0; i < options.length; i++) {
+        option = options[i];
+        if (option.textContent.toUpperCase().indexOf(filter) > -1) {
+          option.style.display = "";
+        } else {
+          option.style.display = "none";
+        }
+      }
+    });
+    // ------------------------------------------------------------------------------
+    // Agregar un evento 'change' a cada campo de entrada para detectar cambios
+    var option_select_tipo_eventos = '';
+    for (var i = listaEstadosSeguimiento.length - 1; i >= 0; i--) {
+      var tipo_evento_value = listaEstadosSeguimiento[i];
+      if(tipo_evento_value == 'RESET'){
+        option_select_tipo_eventos += '<option value="' + tipo_evento_value + '" selected>' + tipo_evento_value + '</option>';
+      }else{
+        option_select_tipo_eventos += '<option value="' + tipo_evento_value + '">' + tipo_evento_value + '</option>';
+      }
+    }
+    droplistEstadoEventos.forEach(function(select) {
+      select.innerHTML = option_select_tipo_eventos;
+    });
+    var selectTipoEvento = document.getElementById("tipoEvento");
+    var selectEstadoEvento = document.getElementById("estadoEvento");
+    selectTipoEvento.addEventListener("change", function(event) {
+      var option_select_tipo_eventos = '';
+      var miListaTipoEventos = [];
+      var valueSelect = event.target.value;
+      if (valueSelect == 'DEMO'){
+        miListaTipoEventos = listaEstadosDemo;
+      }else if(valueSelect == 'MANTENIMIENTO'){
+        miListaTipoEventos = listaEstadosMantenimiento;
+      }else if(valueSelect == 'SEGUIMIENTO'){
+        miListaTipoEventos = listaEstadosSeguimiento;
+      }else{
+        miListaTipoEventos = ['ERROR! REPORTAR','ERROR! REPORTAR'];
+      }
+      for (var i = miListaTipoEventos.length - 1; i >= 0; i--) {
+          var tipo_evento_value = miListaTipoEventos[i];
+          if(tipo_evento_value == 'RESET'){
+            option_select_tipo_eventos += '<option value="' + tipo_evento_value + '" selected>' + tipo_evento_value + '</option>';
+          }else{
+            option_select_tipo_eventos += '<option value="' + tipo_evento_value + '">' + tipo_evento_value + '</option>';
+          }
+      }
+      droplistEstadoEventos.forEach(function(select) {
+        select.innerHTML = option_select_tipo_eventos;
+      });
+    });
+    //--------------------------------------------------------------------------------
+    var campoEstadoEventos = document.getElementById("estadoEvento");
+    var campoResetMotivo = document.getElementById("resetMotivo");
+    var campoResetPersona = document.getElementById("resetPersona");
+    var labelCampoResetMotivo = document.getElementById("label-resetMotivo");
+    var labelCampoResetPersona = document.getElementById("label-resetPersona");
+
+    campoEstadoEventos.addEventListener('change', function(event) {
+      var valueSelect = event.target.value;
+      if(valueSelect == 'RESET'){
+        campoResetMotivo.style.display = 'block';
+        campoResetPersona.style.display = 'block';
+        labelCampoResetMotivo.style.display = 'block';
+    labelCampoResetPersona.style.display = 'block';
+      }
+      else{
+        campoResetMotivo.style.display = 'none';
+        campoResetPersona.style.display = 'none';
+        labelCampoResetMotivo.style.display = 'none';
+    labelCampoResetPersona.style.display = 'none';
+      }
+    });
     // ------------------------------------------------------------------------------
     // Agregar un evento 'change' a cada campo de entrada para detectar cambios
     var selectProgramaEvento = document.getElementById("programaEvento");
     var selectClienteEvento = document.getElementById("clienteEvento");
     var selectVendedorEvento = document.getElementById("vendedorEvento");
-    selectProgramaEvento.addEventListener("change", function(event) {
+    selectClienteEvento.addEventListener("change", function(event) {
       var valueSelect = event.target.value;
       if (valueSelect != '0-NO APLICA'){
-        var dataPrograma = valueSelect.split('-');
-        var cliente = dataPrograma.slice(2, 7).join("-");
-        var vendedor = dataPrograma.slice(7).join("-");
-        selectClienteEvento.value = cliente;
+        btnEditClient.disabled = false;
+        var dataCliente = valueSelect.split('-');
+        var programa = dataCliente.slice(10).join("-");
+        var vendedor = dataCliente.slice(5,10).join("-");
+        selectProgramaEvento.value = programa;
         selectVendedorEvento.value = vendedor;
+      }else{
+        btnEditClient.disabled = true;
       }
     });
     // ------------------------------------------------------------------------------
@@ -150,15 +285,43 @@
       var valueSelect = event.target.value;
       if (valueSelect != '0-NO APLICA'){
         var dataCliente = valueSelect.split('-');
-        var vendedorPrograma = dataCliente.slice(5).join("-");
+        var vendedorPrograma = dataCliente.slice(5,10).join("-");
         selectVendedorPrograma.value = vendedorPrograma;
       }
     });
 
     // -----------------------------------------------------------------------------
+    // Agregar un evento 'change' a cada campo de entrada para detectar cambios
+    var selectProgramaCliente = document.getElementById("programaCliente");
+    selectProgramaCliente.addEventListener("click", function(event) {
+      event.stopPropagation(); // Evita que el evento clic se propague y cierre el menú desplegable
+    });
+    var selectReferenteCliente = document.getElementById("contacto_referenteCliente");
+    var selectVendedorCliente = document.getElementById("vendedorCliente");
+    selectProgramaCliente.addEventListener("change", function(event) {
+      var valueSelect = event.target.value;
+      if (valueSelect != '0-NO APLICA'){
+        var dataPrograma = valueSelect.split('-');
+        var cliente = dataPrograma.slice(2).join("-");
+        var vendedor = dataPrograma.slice(7,12).join("-");
+        selectReferenteCliente.value = cliente;
+        selectVendedorCliente.value = vendedor;
+      }
+    });
     // Iterar sobre cada botón para agregar un evento de clic
     botones.forEach(function(boton) {
       boton.addEventListener('click', function(event) {
+        botones.forEach(function(boton) {
+          if(boton.id == event.target.id){
+            boton.style.color = 'black';
+            boton.style.backgroundColor = 'yellow';
+          }else{
+            boton.style.color = '';
+            boton.style.backgroundColor = '';
+          }
+          
+        });
+        
         sectionsTables.forEach(function(element) {
           element.style.display = 'none';
         });
@@ -198,26 +361,36 @@
       }
     }
 
-
-    let objectInfo = {};
-    window.addEventListener('load' , () => {
-      if (spinnerTablas.classList.contains("d-none")) {
-        spinnerTablas.classList.remove("d-none");
-      } else {
-        spinnerTablas.classList.add("d-none");
-      }
+    function retrieveDataSheets(){
+      let objectInfo = {};
       google.script.run
       .withSuccessHandler(object => {
+        miUrlUniversal = object['url_implementacion'];
+        console.log("URL UNIVERSAL");
+        console.log(miUrlUniversal);
+        delete object.url_implementacion;
         objectInfo = object;
         loadTable(objectInfo);
-        if (spinnerTablas.classList.contains("d-none")) {
-          spinnerTablas.classList.remove("d-none");
-        } else {
-          spinnerTablas.classList.add("d-none");
-        }
+        var btnsAgregar = document.querySelectorAll('.btn-agregar-tabla');
+        // Iterar sobre cada botón para agregar un evento de clic
+        btnsAgregar.forEach(function(boton) {
+          boton.addEventListener('click', function(event) {
+            var buttonId = event.target.id;
+            var nombreTabla = buttonId.split('-')[2];
+            btnAgregar(nombreTabla);
+          });
+        });
+        spinnerTablas.forEach(function(element) {
+          if (element.classList.contains("d-none")) {
+            element.classList.remove("d-none");
+          } else {
+            element.classList.add("d-none");
+          }
+        });
       })
       .getData();
-    } );
+    }
+    
 
     function loadTable ( object ){
       //Listas
@@ -233,11 +406,12 @@
       var option_select_programas = "";
 
       option_select_clientes = option_select_clientes + '<option value="0-NO APLICA" selected>0-NO APLICA</option>';
-      arreglosClientes.forEach(array => {
-        if (array.length >= 13) { 
-            option_select_clientes = option_select_clientes + '<option value="'+array[13]+'">' + array[13] + '</option>';
-        }
-      });
+      for (var i = arreglosClientes.length - 1; i >= 0; i--) {
+          var array = arreglosClientes[i];
+          if (array.length >= 13) { 
+              option_select_clientes += '<option value="' + array[13] + '">' + array[13] + '</option>';
+          }
+      }
 
       arreglosVendedores.forEach(array => {
         if (array.length >= 14) { 
@@ -251,18 +425,21 @@
         }
       });
 
-      arreglosEventos.forEach(array => {
-        if (array.length >= 18) { 
-            option_select_eventos = option_select_eventos + '<option value="'+array[18]+'">' + array[18] + '</option>';
-        }
-      });
+      for (var i = arreglosEventos.length - 1; i >= 0; i--) {
+          var array = arreglosEventos[i];
+          if (array.length >= 18) { 
+              option_select_eventos += '<option value="' + array[18] + '">' + array[18] + '</option>';
+          }
+      }
 
       option_select_programas = option_select_programas + '<option value="0-NO APLICA" selected>0-NO APLICA</option>';
-      arreglosProgramas.forEach(array => {
-        if (array.length >= 15) { 
-            option_select_programas = option_select_programas + '<option value="'+array[15]+'">' + array[15] + '</option>';
-        }
-      });
+
+      for (var i = arreglosProgramas.length - 1; i >= 0; i--) {
+          var array = arreglosProgramas[i];
+          if (array.length >= 15) { 
+              option_select_programas += '<option value="' + array[15] + '">' + array[15] + '</option>';
+          }
+      }
 
       droplistVendedores.forEach(function(select) {
         select.innerHTML = option_select_vendedores;
@@ -335,6 +512,12 @@
                             text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
                             titleAttr: 'Exportar a excel',
                             className: 'btn btn-success'
+                          },
+                          {
+                            extend:'colvis',
+                            text: 'Columnas',
+                            titleAttr: 'Visibilidad de columnas',
+                            className: 'btn btn-secondary'
                           }
                         ]
                     }
@@ -372,12 +555,20 @@
                             text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
                             titleAttr: 'Exportar a excel',
                             className: 'btn btn-success'
+                          },
+                          {
+                            extend:'colvis',
+                            text: 'Columnas',
+                            titleAttr: 'Visibilidad de columnas',
+                            className: 'btn btn-secondary'
                           }
                         ]
                     }
                 }
               });
               miTable.column(1).visible(false);
+              miTable.column(12).visible(false);
+              miTable.column(13).visible(false);
               miTable.column(14).visible(false);
               miTable.column(15).visible(false);
               miTable.column(16).visible(false);
@@ -386,6 +577,24 @@
               var miTable = new DataTable(tableName,{
                 columns: formattedCols,
                 data: newData,
+                columnDefs: [
+                    {
+                        targets: 16, // Índice de la columna que deseas modificar
+                        render: function(data, type, row, meta) {
+                            // Aquí puedes modificar los datos de la columna
+                            var nuevoContenido = data.split('-').slice(0, 5).join('-');
+                            return nuevoContenido;
+                        }
+                    },
+                    {
+                        targets: 19, // Índice de otra columna que deseas modificar
+                        render: function(data, type, row, meta) {
+                            // Aquí puedes modificar los datos de la otra columna
+                            var nuevoContenido = data.split('-').slice(0, 7).join('-');
+                            return nuevoContenido;
+                        }
+                    }
+                ],
                 language: {
                     lengthMenu: 'Mostrar _MENU_ registros por página',
                     zeroRecords: 'Ningún registro encontrado',
@@ -410,10 +619,17 @@
                             text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
                             titleAttr: 'Exportar a excel',
                             className: 'btn btn-success'
+                          },
+                          {
+                            extend:'colvis',
+                            text: 'Columnas',
+                            titleAttr: 'Visibilidad de columnas',
+                            className: 'btn btn-secondary'
                           }
                         ]
                     }
-                }
+                },
+                order: [[0, 'desc']]
               });
               miTable.column(1).visible(false);
               miTable.column(2).visible(false);
@@ -429,6 +645,16 @@
               var miTable = new DataTable(tableName,{
                 columns: formattedCols,
                 data: newData,
+                columnDefs: [
+                    {
+                        targets: 14, // Índice de la columna que deseas modificar
+                        render: function(data, type, row, meta) {
+                            // Aquí puedes modificar los datos de la columna
+                            var nuevoContenido = data.split('-').slice(0, 5).join('-');
+                            return nuevoContenido;
+                        }
+                    }
+                ],
                 language: {
                     lengthMenu: 'Mostrar _MENU_ registros por página',
                     zeroRecords: 'Ningún registro encontrado',
@@ -453,6 +679,12 @@
                             text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
                             titleAttr: 'Exportar a excel',
                             className: 'btn btn-success'
+                          },
+                          {
+                            extend:'colvis',
+                            text: 'Columnas',
+                            titleAttr: 'Visibilidad de columnas',
+                            className: 'btn btn-secondary'
                           }
                         ]
                     }
@@ -461,16 +693,37 @@
               });
               miTable.column(1).visible(false);
               miTable.column(2).visible(false);
+              miTable.column(3).visible(false);
               miTable.column(5).visible(false);
               miTable.column(6).visible(false);
-              miTable.column(14).visible(false);
+              miTable.column(7).visible(false);
               miTable.column(15).visible(false);
               miTable.column(16).visible(false);
+              miTable.column(18).visible(false);
+              miTable.column(19).visible(false);
               break;
             case 'evento':
               var miTable = new DataTable(tableName,{
                 columns: formattedCols,
                 data: newData,
+                columnDefs: [
+                    {
+                        targets: 17, // Índice de la columna que deseas modificar
+                        render: function(data, type, row, meta) {
+                            // Aquí puedes modificar los datos de la columna
+                            var nuevoContenido = data.split('-').slice(0, 5).join('-');
+                            return nuevoContenido;
+                        }
+                    },
+                    {
+                        targets: 21, // Índice de otra columna que deseas modificar
+                        render: function(data, type, row, meta) {
+                            // Aquí puedes modificar los datos de la otra columna
+                            var nuevoContenido = data.split('-').slice(0, 7).join('-');
+                            return nuevoContenido;
+                        }
+                    }
+                ],
                 language: {
                     lengthMenu: 'Mostrar _MENU_ registros por página',
                     zeroRecords: 'Ningún registro encontrado',
@@ -495,11 +748,52 @@
                             text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
                             titleAttr: 'Exportar a excel',
                             className: 'btn btn-success'
+                          },
+                          {
+                            extend:'colvis',
+                            text: 'Columnas',
+                            titleAttr: 'Visibilidad de columnas',
+                            className: 'btn btn-secondary'
                           }
                         ]
                     }
                 },
-                order: [[0, 'desc']]
+                order: [[0, 'desc']],
+                
+                createdRow: function(row, data, dataIndex) {
+
+                  switch (data[5]) {
+                    case 'NO INTERESA':
+                      $(row).addClass('color-no-interesa');
+                      break;
+                    case 'RESET REPROGRAMADO':
+                      $(row).addClass('color-reset-repre-rr');
+                      break;
+                    case 'VENTA':
+                      $(row).addClass('color-venta');
+                      break;
+                    case '90':
+                      $(row).addClass('color-no-venta');
+                      break;
+                    case 'CRP':
+                      $(row).addClass('color-crp');
+                      break;
+                    case 'EN PROCESO':
+                      $(row).addClass('color-en-proceso');
+                      break;
+                    case 'RESET':
+                      if (data[6] == 'TELE') {
+                        $(row).addClass('color-reset-tele');
+                      }else if(data[6] == 'ASESOR'){
+                        $(row).addClass('color-reset-repre-rr');
+                      }
+                      else{}
+                      break;
+                    default:
+                      // Código que se ejecutará si ninguna de las opciones coincide
+                      break;
+                  }
+                }
               });
               miTable.column(1).visible(false);
               miTable.column(2).visible(false);
@@ -512,11 +806,23 @@
               miTable.column(18).visible(false);
               miTable.column(19).visible(false);
               miTable.column(20).visible(false);
+              miTable.column(22).visible(false);
+              miTable.column(23).visible(false);
               break;
             case 'venta':
               var miTable = new DataTable(tableName,{
                 columns: formattedCols,
                 data: newData,
+                columnDefs: [
+                    {
+                        targets: 5, // Índice de la columna que deseas modificar
+                        render: function(data, type, row, meta) {
+                            // Aquí puedes modificar los datos de la columna
+                            var nuevoContenido = data.split('-').slice(0, 7).join('-');
+                            return nuevoContenido;
+                        }
+                    }
+                ],
                 language: {
                     lengthMenu: 'Mostrar _MENU_ registros por página',
                     zeroRecords: 'Ningún registro encontrado',
@@ -541,6 +847,12 @@
                             text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
                             titleAttr: 'Exportar a excel',
                             className: 'btn btn-success'
+                          },
+                          {
+                            extend:'colvis',
+                            text: 'Columnas',
+                            titleAttr: 'Visibilidad de columnas',
+                            className: 'btn btn-secondary'
                           }
                         ]
                     }
@@ -549,7 +861,8 @@
               });
               miTable.column(1).visible(false);
               miTable.column(6).visible(false);
-              miTable.column(7).visible(false);
+              miTable.column(9).visible(false);
+              miTable.column(10).visible(false);
               
               break;
             default:
@@ -571,7 +884,8 @@
                 // Crear el botón fuera de la configuración de DataTables
                 var botonAgregar = document.createElement('button');
                 botonAgregar.textContent = '+ Add';
-                botonAgregar.className = 'btn btn-warning buttons-html5';
+                botonAgregar.className = 'btn btn-agregar-tabla btn-warning buttons-html5';
+                botonAgregar.id = 'btn-agregar-'+nombreTabla;
                 botonAgregar.setAttribute('data-bs-toggle', 'modal');
                 // Agregar el botón a donde desees en tu página botonesDataTable
                 var nombreModal =  '#createModal'+ nombreTabla.charAt(0).toUpperCase() + nombreTabla.slice(1);
@@ -583,19 +897,6 @@
           } else {
           }
       });
-
-      
-    };
-
-
-    // Función para boton Agregar
-    function btnAgregar(nombreTabla) {
-      const formName = 'id-form-crear-'+nombreTabla;
-      const form = document.getElementById(formName);
-      form.reset();
-      fechaInput.value = obtenerFechaActual();
-      horaInicioInput.value = obtenerHoraActual(0);
-      horaFinInput.value = obtenerHoraActual(1);
     };
 
     // Función para enviar el formulario de empleado
@@ -609,13 +910,18 @@
           loadingOnOff('btnGuardarEmpleado','btnLoadingEmpleado');
           form.reset();
           window.location.reload();
+          /*
+          console.log('URL UNIVERSAL');
+          console.log(miUrlUniversal);
+          window.open(miUrlUniversal, '_top');
+          */
         })
         .withFailureHandler(error => {
-        // Manejo de la excepción
-        console.error("Se ha producido un error en la función de los colaboradores: ", error);
-        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
-        alert("Se ha producido un error en la función de los colaboradores: " + error.message);
-      })
+          // Manejo de la excepción
+          console.error("Se ha producido un error en la función de los colaboradores: ", error);
+          // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+          alert("Se ha producido un error en la función de los colaboradores: " + error.message);
+        })
         .createEmpleado(form);
       }
       else
@@ -670,6 +976,7 @@
         console.error("Se ha producido un error en la función de los asesores: ", error);
         // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
         alert("Se ha producido un error en la función de los asesores: " + error.message);
+        window.location.reload();
       })
         .modifyVendedor(form);
       }
@@ -679,13 +986,13 @@
     function enviarFormCliente() {
       loadingOnOff('btnGuardarCliente','btnLoadingCliente');
       const form = document.getElementById('id-form-crear-cliente');
+      const flagEditClient = document.getElementById('flag-edit-client');
       const idCliente = form.idCliente.value;
       if(idCliente === '0'){
         google.script.run
         .withSuccessHandler(result => {
           loadingOnOff('btnGuardarCliente','btnLoadingCliente');
           form.reset();
-          //window.location.reload();
         })
         .withFailureHandler(error => {
         // Manejo de la excepción
@@ -700,8 +1007,13 @@
         google.script.run
         .withSuccessHandler(result => {
           loadingOnOff('btnGuardarCliente','btnLoadingCliente');
-          form.reset();
-          window.location.reload();
+          if(flagEditClient == 'false'){
+            form.reset();
+            window.location.reload();
+          }else{
+            createModal = bootstrap.Modal.getOrCreateInstance('#createModalCliente');
+            createModal.hide();
+          }
         })
         .withFailureHandler(error => {
         // Manejo de la excepción
@@ -761,7 +1073,7 @@
         .withSuccessHandler(result => {
           loadingOnOff('btnGuardarEvento','btnLoadingEvento');
           form.reset();
-          //window.location.reload();
+          window.location.reload();
         })
         .withFailureHandler(error => {
         // Manejo de la excepción
@@ -827,14 +1139,55 @@
       }
     }
 
-    
+    function funcionEspecialBtn(){
+
+      loadingOnOff('btnEditClient','btnLoadingEditClient');
+
+      var select = document.getElementById("clienteEvento");
+      var valorSelect = select.value;
+      var idCliente = valorSelect.split("-")[0];
+      
+      google.script.run
+      .withSuccessHandler(dataRow => {
+        var createModal;
+        createModal = bootstrap.Modal.getOrCreateInstance('#createModalCliente');
+        createModal.show();
+
+        document.getElementById("idCliente").value = idCliente;
+        document.getElementById("idPersonaCliente").value = dataRow[0][0];
+        document.getElementById("nombreCliente").value =  dataRow[0][4];
+        document.getElementById("apellidoCliente").value =  dataRow[0][5];
+        document.getElementById("celularCliente").value = dataRow[0][6];
+        document.getElementById("departamentoCliente").value = dataRow[0][7];
+        document.getElementById("ciudadCliente").value = dataRow[0][8];
+        document.getElementById("direccionCliente").value = dataRow[0][9];
+        document.getElementById("emailCliente").value = dataRow[0][10];
+        if(dataRow[0][11]=="on"){
+          document.getElementById("activoCliente").checked = true;
+        }
+        else{
+          document.getElementById("activoCliente").checked = false;
+        }
+        document.getElementById("vendedorCliente").value = dataRow[0][13];
+        document.getElementById("empleadoCliente").value = dataRow[0][14];
+        document.getElementById("contacto_referenteCliente").value = dataRow[0][15];
+        document.getElementById("origenCliente").value = dataRow[0][17];
+        document.getElementById("programaCliente").value = dataRow[0][18];
+        document.getElementById("nucleoCliente").value = dataRow[0][19];
+        document.getElementById("prospectoCliente").value = dataRow[0][20];
+        document.getElementById('flag-edit-client').value = 'true';
+
+        loadingOnOff('btnEditClient','btnLoadingEditClient');
+      })
+      .getDataRow(idCliente,'cliente');
+    }
     // Editar registros
     function editarRegistroModal(button, nombreTabla){
 
+      document.getElementById('flag-edit-client').value = 'false';
+
       const tableRow = button.parentNode.parentNode.parentNode;
       var id = tableRow.cells[0].innerHTML;
-      console.log("EL ID DE LA TABLA");
-      console.log(id);
       var dataRow;
       loadingOnOffEdit('id-edit-'+nombreTabla+'-'+id,'id-loading-'+nombreTabla+'-'+id);
 
@@ -912,6 +1265,8 @@
             document.getElementById("origenCliente").value = dataRow[0][17];
             document.getElementById("programaCliente").value = dataRow[0][18];
             document.getElementById("nucleoCliente").value = dataRow[0][19];
+            document.getElementById("prospectoCliente").value = dataRow[0][20];
+            document.getElementById('flag-edit-client').value = 'false';
             break;
 
           case 'programa':
@@ -989,6 +1344,17 @@
       })
       .generarReporte(fechaReporteExcelInicio,fechaReporteExcelFin);
     }
+
+    // Función para boton Agregar
+    function btnAgregar(nombreTabla) {
+      const formName = 'id-form-crear-'+nombreTabla;
+      const form = document.getElementById(formName);
+      form.reset();
+      fechaPrograma.value = obtenerFechaActual();
+      fechaInput.value = obtenerFechaActual();
+      horaInicioInput.value = obtenerHoraActual(0);
+      horaFinInput.value = obtenerHoraActual(4);
+    };
 
   } catch (error) {
     // Manejo de la excepción
