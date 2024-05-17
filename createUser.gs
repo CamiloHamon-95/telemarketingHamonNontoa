@@ -1,3 +1,5 @@
+var fechaActual = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
+
 function createEmpleado(form) {
 
   for (var key in form) {
@@ -30,7 +32,9 @@ function createEmpleado(form) {
       form.ciudadEmpleado.toUpperCase(),
       form.direccionEmpleado.toUpperCase(),
       form.emailEmpleado.toLowerCase(),
-      '=$A'+lrPersona+'&"-"&$B'+lrPersona+'&"-"&$C'+lrPersona+'&"-"&$D'+lrPersona
+      '=$A'+lrPersona+'&"-"&$B'+lrPersona+'&"-"&$C'+lrPersona+'&"-"&$D'+lrPersona,
+      String(fechaActual),
+      0
     ]);
 
     sheetEmpleado.appendRow([
@@ -94,7 +98,9 @@ function createVendedor(form){
       form.ciudadVendedor.toUpperCase(),
       form.direccionVendedor.toUpperCase(),
       form.emailVendedor.toLowerCase(),
-      '=$A'+lrPersona+'&"-"&$B'+lrPersona+'&"-"&$C'+lrPersona+'&"-"&$H'+lrPersona
+      '=$A'+lrPersona+'&"-"&$B'+lrPersona+'&"-"&$C'+lrPersona+'&"-"&$H'+lrPersona,
+      String(fechaActual),
+      0
     ]);
     sheetVendedor.appendRow([
       idVendedor,
@@ -166,7 +172,9 @@ function createCliente(form){
       form.ciudadCliente.toUpperCase(),
       form.direccionCliente.toUpperCase(),
       form.emailCliente.toLowerCase(),
-      '=$A'+lrPersona+'&"-"&$B'+lrPersona+'&"-"&$C'+lrPersona+'&"-"&$D'+lrPersona
+      '=$A'+lrPersona+'&"-"&$B'+lrPersona+'&"-"&$C'+lrPersona+'&"-"&$D'+lrPersona,
+      String(fechaActual),
+      0
     ]);
     sheetCliente.appendRow([
       idCliente,
@@ -182,14 +190,15 @@ function createCliente(form){
       '=VLOOKUP($B'+lrCliente+';tabla_persona;7;0)',
       '=VLOOKUP($B'+lrCliente+';tabla_persona;8;0)',
       String(form.activoCliente),
-      '=$A'+lrCliente+'&"-"&VLOOKUP($B'+lrCliente+';tabla_persona;9;0)',
+      '=$A'+lrCliente+'&"-"&VLOOKUP($B'+lrCliente+';tabla_persona;9;0)&"-"&$O'+lrCliente+'&"-"&$T'+lrCliente,
       '=VLOOKUP($C'+lrCliente+';tabla_vendedor;15;0)',
       '=VLOOKUP($D'+lrCliente+';tabla_empleado;13;0)',
       '=IF($E'+lrCliente+'=0;"0-NO APLICA";VLOOKUP($E'+lrCliente+';tabla_cliente;14;0))',
       idPrograma,
       form.origenCliente.toUpperCase(),
       '=IF($R'+lrCliente+'=0;"0-NO APLICA";VLOOKUP($R'+lrCliente+';tabla_programa;16;0))',
-      form.nucleoCliente.toUpperCase()
+      form.nucleoCliente.toUpperCase(),
+      form.prospectoCliente.toUpperCase()
     ]);
 
     return "Nuevo cliente agregado a la base de datos";
@@ -255,7 +264,7 @@ function createPrograma(form){
       '=TEXT($E'+lrPrograma+'+14;"mm/dd/yyyy")&" 11:00"',
       14,
       '=TODAY()-$E'+lrPrograma,
-      form.premioPrograma,
+      form.premioPrograma.toUpperCase(),
       '=IF($E'+lrPrograma+'-TODAY()>-1;"ACTIVO";"VENCIDO")',
       form.resultadoPrograma,
       '=COUNTIF(cliente!R:R;"="&A'+lrPrograma+')',
@@ -263,7 +272,9 @@ function createPrograma(form){
       '=VLOOKUP(B'+lrPrograma+';tabla_cliente;14;0)',
       '=A'+lrPrograma+'&"-"&D'+lrPrograma+'&"-"&O'+lrPrograma,
       idEventoCalendar,
-      '=VLOOKUP($C'+lrPrograma+';tabla_vendedor;15;0)'
+      '=VLOOKUP($C'+lrPrograma+';tabla_vendedor;15;0)',
+      String(fechaActual),
+      0
     ]);
 
     return "Nuevo programa agregado a la base de datos";
@@ -275,6 +286,8 @@ function createPrograma(form){
 };
 
 function createEvento(form){
+
+  var idEventoCalendar = "NULL";
 
   for (var key in form) {
     if (form.hasOwnProperty(key)) { // Verifica si la propiedad pertenece al objeto directamente
@@ -334,8 +347,9 @@ function createEvento(form){
     correos = form.correosEvento;
   }
   
-
-  var idEventoCalendar = crearEventoCalendar(idCalendarEvento, nombreEvento,fechaInicioEvento,fechaFinEvento,correos,miDescripcion);
+  if(form.tipoEvento.toUpperCase() != 'SEGUIMIENTO'){
+    idEventoCalendar = crearEventoCalendar(idCalendarEvento, nombreEvento,fechaInicioEvento,fechaFinEvento,correos,miDescripcion);
+  }
   //arreglar formato de la hora
   var horaInicioEvento = form.horaInicioEvento;
   var horaFinEvento = form.horaFinEvento;
@@ -373,10 +387,12 @@ function createEvento(form){
       '=VLOOKUP($B'+lr+';tabla_vendedor;15;0)',
       '=VLOOKUP($C'+lr+';tabla_empleado;13;0)',
       '=VLOOKUP($D'+lr+';tabla_cliente;14;0)',
-      '=A'+lr+'&" - "&E'+lr+'&" - "&R'+lr,
+      '=A'+lr+'&"-"&E'+lr+'&"-"&R'+lr,
       idEventoCalendar,
       idPrograma,
-      '=IF($U'+lr+'=0;"0-NO APLICA";VLOOKUP($U'+lr+';tabla_programa;16;0))'
+      '=IF($U'+lr+'=0;"0-NO APLICA";VLOOKUP($U'+lr+';tabla_programa;16;0))',
+      String(fechaActual),
+      0
     ]);
 
     return "Nuevo seguimiento agregado a la base de datos";
@@ -419,7 +435,9 @@ function createVenta(form){
       '=VLOOKUP(B'+lrVenta+';tabla_evento;19;0)',
       '=VLOOKUP(B'+lrVenta+';tabla_evento;2;0)',
       '=VLOOKUP($G'+lrVenta+';tabla_vendedor;15;0)',
-      '=VLOOKUP($B'+lrVenta+';tabla_evento;9;0)'
+      '=VLOOKUP($B'+lrVenta+';tabla_evento;9;0)',
+      String(fechaActual),
+      0
     ]);
 
     return "Nueva venta agregado a la base de datos";
