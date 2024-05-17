@@ -50,6 +50,19 @@
     z-index: -1;
   }
 
+  .form-select {
+    background-color: #C0E1FF;
+  }
+
+  .fade {
+    backdrop-filter: blur(15px);
+  }
+
+  option {
+    background-color: #585858;
+    color: #EBEBEB;
+  }
+
 
   .titulo {
     font-family: Arial, sans-serif; /* Tipo de fuente legible */
@@ -78,11 +91,11 @@
   table {
     color: black;
     width: 100%;
-    font-size: 0.8rem;
+    font-size: 0.68rem;
   }
 
   .dt-container {
-    height: 25rem;
+    height: 40rem;
     overflow: auto;
   }
 
@@ -104,8 +117,8 @@
   h2 {
     width: 100%;
     text-align: center;
-    font-size: 1.2rem;
-    padding: 0.5rem 0.5rem;
+    font-size: 1rem;
+    padding: 0.2rem 0.2rem;
   }
 
   .columnas {
@@ -122,7 +135,7 @@
   }
 
   .id-field {
-    background-color: #B4B4B4;
+    background-color: #7592B0;
   }
 
   .modal {
@@ -145,11 +158,32 @@
   }
 
   .navbar a {
+    position: relative;
+    padding: 0 0.7rem;
     font-size: 1rem;
-    color: #fff;
+    color: #808080;
     font-weight: 500;
     margin-left: 2.5rem;
     text-decoration: none;
+  }
+
+  .navbar a:hover{
+    color: #fff;
+  }
+
+  .navbar a::after{
+    content:"";
+    position: absolute;
+    background-color: #E4E800;
+    height: 0.3rem;
+    width: 0;
+    left: 0rem;
+    bottom: -0.7rem;
+    transition: 0.3s;
+  }
+
+  .navbar a:hover::after{
+    width: 100%;
   }
 
   /* Estilos para navbar responsive */
@@ -158,34 +192,85 @@
     display: none; /* Oculta el botón de menú en pantallas grandes */
   }
 
+  .divs-input-busqueda {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid black;
+    padding: 0 1rem;
+    border-radius: 20px;
+  }
+
+  .divs-input-busqueda input {
+    margin-left: 5px;
+    border: none;
+  }
+
+  table.dataTable > tbody > tr.color-no-interesa {
+    background-color: #FFC643;
+  }
+
+  table.dataTable > tbody > tr.color-reset-tele {
+    background-color: #d8bfd8;
+  }
+
+  table.dataTable > tbody > tr.color-reset-repre-rr {
+    background-color: #f0e68c;
+  }
+
+  table.dataTable > tbody > tr.color-venta {
+    background-color: #fffacd;
+  }
+
+  table.dataTable > tbody > tr.color-no-venta {
+    background-color: #add8e6;
+  }
+
+  table.dataTable > tbody > tr.color-en-proceso {
+    background-color: #ffb6c1;
+  }
+
+  table.dataTable > tbody > tr.color-crp {
+    background-color: #99A3A4;
+  }
+
+  #btnEditClient{
+    color:white;
+    background-color: brown;
+    border-radius: 20px;
+  }
+
+  #horasEvento {
+    display: flex;
+    justify-content: space-evenly;
+  }
+
   #nav-toggle{
     display:none;
   }
 
   footer{
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     flex-direction: row; /* Alinear elementos en fila */
-    width: 100%; /* Toma el ancho completo del contenedor */
-    margin: 1rem;
+    margin: 2rem;
   }
 
   .footer-div {
     display:flex;
     flex-direction:column;
-    padding: 5px; 
-  }
-
-  .div-fechas-footer {
-    display:flex;
-    flex-direction:row;
-    flex-grow: 1; 
-  }
-  #div-reporte-excel {
     padding: 2rem;
     color: #fff;
     background:#001F3E;
     border-radius: 2rem;
+    width: 40rem;
+  }
+
+  .div-fechas-footer {
+    display:flex;
+    flex-wrap: wrap;
+    flex-direction:row;
+    flex-grow: 1; 
   }
 
   .div-fechas-reporte-excel {
@@ -201,10 +286,15 @@
     width: 50%;
   }
 
+  #instrucciones-software {
+    color:#fff;
+  }
+
   /* Estilos para pantallas pequeñas */
   @media screen and (max-width: 1024px) {
     .navbar {
       flex-direction: column;
+      justify-content: space-around;
       position: absolute;
       top: 100%;
       left: 0;
@@ -234,7 +324,7 @@
       font-size: 1.2rem;
       text-align:center;
       text-decoration: none;
-      color: #fff;
+      color: #001F3E;
       transform: translateY(-50px);
       transition: .3s ease;
     }
