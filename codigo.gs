@@ -1,5 +1,7 @@
 const BD_ID = '1-Ajhs5Zrdlk-OTewYC3bVi0A-HhuihENJRhngtv0zZQ';
 const ss = SpreadsheetApp.openById(BD_ID);
+const URLactual = ScriptApp.getService().getUrl();
+
 
 const sheetPersona = ss.getSheetByName('persona'); 
 const [headers_persona, ...usersInfo_persona] = sheetPersona.getDataRange().getDisplayValues();
@@ -35,7 +37,8 @@ function getData(){
     'vendedor':{headers_vendedor,usersInfo_vendedor},
     'cliente':{headers_cliente, usersInfo_cliente},
     'programa':{headers_programa,usersInfo_programa},
-    'venta':{headers_venta,usersInfo_venta}
+    'venta':{headers_venta,usersInfo_venta},
+    'url_implementacion':URLactual
   };
 
   return overallDict;
