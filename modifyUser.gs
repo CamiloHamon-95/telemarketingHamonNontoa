@@ -1,5 +1,4 @@
-// Obtener el valor de la celda anterior en la columna A
-//var celdaAnterior = hoja.getRange(hoja.getLastRow(), 1).getValue();
+var fechaActual = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
 
 function modifyEmpleado(form) {
 
@@ -18,6 +17,8 @@ function modifyEmpleado(form) {
 
   const filaPersona = buscarFila(form.idPersonaEmpleado,sheetPersona);
   const filaEmpleado = buscarFila(form.idEmpleado,sheetEmpleado);
+  var fechaCreacion = sheetPersona.getRange("J"+filaPersona).getValue();
+  fechaCreacion = Utilities.formatDate(fechaCreacion, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
 
   sheetPersona.getRange(filaPersona,2,1,sheetPersona.getLastColumn()-1).setValues([[
     form.nombreEmpleado.toUpperCase(),
@@ -27,7 +28,9 @@ function modifyEmpleado(form) {
     form.ciudadEmpleado.toUpperCase(),
     form.direccionEmpleado.toUpperCase(),
     form.emailEmpleado.toLowerCase(),
-    '=$A'+filaPersona+'&"-"&$B'+filaPersona+'&"-"&$C'+filaPersona+'&"-"&$D'+filaPersona
+    '=$A'+filaPersona+'&"-"&$B'+filaPersona+'&"-"&$C'+filaPersona+'&"-"&$D'+filaPersona,
+    String(fechaCreacion),
+    String(fechaActual)
   ]])
 
   sheetEmpleado.getRange(filaEmpleado,2,1,sheetEmpleado.getLastColumn()-1).setValues([[
@@ -65,6 +68,8 @@ function modifyVendedor(form){
 
   const filaPersona = buscarFila(form.idPersonaVendedor,sheetPersona);
   const filaVendedor = buscarFila(form.idVendedor,sheetVendedor);
+  var fechaCreacion = sheetPersona.getRange("J"+filaPersona).getValue();
+  fechaCreacion = Utilities.formatDate(fechaCreacion, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
 
   sheetPersona.getRange(filaPersona,2,1,sheetPersona.getLastColumn()-1).setValues([[
     form.nombreVendedor.toUpperCase(),
@@ -74,7 +79,9 @@ function modifyVendedor(form){
     form.ciudadVendedor.toUpperCase(),
     form.direccionVendedor.toUpperCase(),
     form.emailVendedor.toLowerCase(),
-    '=$A'+filaPersona+'&"-"&$B'+filaPersona+'&"-"&$C'+filaPersona+'&"-"&$H'+filaPersona
+    '=$A'+filaPersona+'&"-"&$B'+filaPersona+'&"-"&$C'+filaPersona+'&"-"&$H'+filaPersona,
+    String(fechaCreacion),
+    String(fechaActual)
   ]])
 
   sheetVendedor.getRange(filaVendedor,2,1,sheetVendedor.getLastColumn()-1).setValues([[
@@ -120,6 +127,8 @@ function modifyCliente(form){
 
   const filaPersona = buscarFila(form.idPersonaCliente,sheetPersona);
   const filaCliente = buscarFila(form.idCliente,sheetCliente);
+  var fechaCreacion = sheetPersona.getRange("J"+filaPersona).getValue();
+  fechaCreacion = Utilities.formatDate(fechaCreacion, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
   var idVendedor = form.vendedorCliente.split('-')[0];
   var idEmpleado = form.empleadoCliente.split('-')[0];
   var idPrograma = form.programaCliente.split('-')[0];
@@ -139,7 +148,9 @@ function modifyCliente(form){
     form.ciudadCliente.toUpperCase(),
     form.direccionCliente.toUpperCase(),
     form.emailCliente.toLowerCase(),
-    '=$A'+filaPersona+'&"-"&$B'+filaPersona+'&"-"&$C'+filaPersona+'&"-"&$D'+filaPersona
+    '=$A'+filaPersona+'&"-"&$B'+filaPersona+'&"-"&$C'+filaPersona+'&"-"&$D'+filaPersona,
+    String(fechaCreacion),
+    String(fechaActual)
   ]])
 
   sheetCliente.getRange(filaCliente,2,1,sheetCliente.getLastColumn()-1).setValues([[
@@ -155,14 +166,15 @@ function modifyCliente(form){
     '=VLOOKUP($B'+filaCliente+';tabla_persona;7;0)',
     '=VLOOKUP($B'+filaCliente+';tabla_persona;8;0)',
     String(form.activoCliente),
-    '=$A'+filaCliente+'&"-"&VLOOKUP($B'+filaCliente+';tabla_persona;9;0)',
+    '=$A'+filaCliente+'&"-"&VLOOKUP($B'+filaCliente+';tabla_persona;9;0)&"-"&$O'+filaCliente+'&"-"&$T'+filaCliente,
     '=VLOOKUP($C'+filaCliente+';tabla_vendedor;15;0)',
     '=VLOOKUP($D'+filaCliente+';tabla_empleado;13;0)',
     '=IF($E'+filaCliente+'=0;"0-NO APLICA";VLOOKUP($E'+filaCliente+';tabla_cliente;14;0))',
     idPrograma,
     form.origenCliente.toUpperCase(),
     '=IF($R'+filaCliente+'=0;"0-NO APLICA";VLOOKUP($R'+filaCliente+';tabla_programa;16;0))',
-    form.nucleoCliente.toUpperCase()
+    form.nucleoCliente.toUpperCase(),
+    form.prospectoCliente.toUpperCase()
   ]])
 
   return "Registro editado con éxito";
@@ -184,6 +196,8 @@ function modifyPrograma(form){
 
 
   const filaPrograma = buscarFila(form.idPrograma,sheetPrograma);
+  var fechaCreacion = sheetPrograma.getRange("S"+filaPrograma).getValue();
+  fechaCreacion = Utilities.formatDate(fechaCreacion, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
   var idCliente = form.clientePrograma.split('-')[0];
   var filaCliente = buscarFila(idCliente,sheetCliente);
   var cliente = sheetCliente.getRange("N"+filaCliente).getValue();
@@ -246,7 +260,7 @@ function modifyPrograma(form){
     '=TEXT($E'+filaPrograma+'+14;"mm/dd/yyyy")&" 11:00"',
     14,
     '=TODAY()-$E'+filaPrograma,
-    form.premioPrograma,
+    form.premioPrograma.toUpperCase(),
     '=IF($E'+filaPrograma+'-TODAY()>-1;"ACTIVO";"VENCIDO")',
     form.resultadoPrograma,
     '=COUNTIF(cliente!R:R;"="&A'+filaPrograma+')',
@@ -254,7 +268,9 @@ function modifyPrograma(form){
     '=VLOOKUP(B'+filaPrograma+';tabla_cliente;14;0)',
     '=A'+filaPrograma+'&"-"&D'+filaPrograma+'&"-"&O'+filaPrograma,
     idCalendar,
-    '=VLOOKUP($C'+filaPrograma+';tabla_vendedor;15;0)'
+    '=VLOOKUP($C'+filaPrograma+';tabla_vendedor;15;0)',
+    String(fechaCreacion),
+    String(fechaActual)
   ]])
   return "Registro editado con éxito";
 };
@@ -280,6 +296,8 @@ function modifyEvento(form){
   var idPrograma = form.programaEvento.split('-')[0];
   var nombreEvento = form.tipoEvento +" // "+ form.clienteEvento;
   const filaEvento = buscarFila(form.idEvento,sheetEvento);
+  var fechaCreacion = sheetEvento.getRange("W"+filaEvento).getValue();
+  fechaCreacion = Utilities.formatDate(fechaCreacion, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
   // Obtener el ID del eventoCalendar
   var idCalendar = sheetEvento.getRange("T"+filaEvento).getValue();
   var fechaTabla = sheetEvento.getRange("L"+filaEvento).getValue();
@@ -293,7 +311,7 @@ function modifyEvento(form){
   console.log(fechaTabla);
   console.log("fecha nueva: ");
   console.log(fechaInicioEvento);
-  if(fechaTabla != fechaInicioEvento){
+  if(fechaTabla != fechaInicioEvento && form.tipoEvento.toUpperCase() != 'SEGUIMIENTO'){
     // Para ID Calendar vendedor
     var filaVendedor = buscarFila(idVendedor,sheetVendedor);
     var idCalendarEvento = sheetVendedor.getRange("P"+filaVendedor).getValue();
@@ -314,16 +332,16 @@ function modifyEvento(form){
     var asesorCliente =  sheetCliente.getRange("O"+filaCliente).getValue();
     
     var miDescripcion = "<font color='#9000CB'><b>Cliente:</b></font>&emsp;"+cliente+"<br>"+
-  "<font color='#EAA300'><b>Celular:</b></font>&emsp;"+celularCliente+"<br>"+
-  "<font color='#9000CB'><b>Departamento:</b></font>&emsp;"+departamentoCliente+"<br>"+
-  "<font color='#EAA300'><b>Ciudad:</b></font>&emsp;"+ciudadCliente+"<br>"+
-  "<font color='#9000CB'><b>Dirección:</b></font>&emsp;"+direccionCliente+"<br>"+
-  "<font color='#EAA300'><b>Contacto Referente:</b></font>&emsp;"+contactoRef+"<br>"+
-  "<font color='#9000CB'><b>Origen:</b></font>&emsp;"+origenCliente+"<br>"+
-  "<font color='#EAA300'><b>Nucleo:</b></font>&emsp;"+nucleoCliente+"<br>"+
-  "<font color='#9000CB'><b>Programa:</b></font>&emsp;"+programaCliente+"<br>"+
-  "<font color='#EAA300'><b>Asesor:</b></font>&emsp;"+asesorCliente+"<br>"+
-  "<font color='#9000CB'><b>Observaciones:</b></font>&emsp;"+form.observacionesEvento+"<br>";
+    "<font color='#EAA300'><b>Celular:</b></font>&emsp;"+celularCliente+"<br>"+
+    "<font color='#9000CB'><b>Departamento:</b></font>&emsp;"+departamentoCliente+"<br>"+
+    "<font color='#EAA300'><b>Ciudad:</b></font>&emsp;"+ciudadCliente+"<br>"+
+    "<font color='#9000CB'><b>Dirección:</b></font>&emsp;"+direccionCliente+"<br>"+
+    "<font color='#EAA300'><b>Contacto Referente:</b></font>&emsp;"+contactoRef+"<br>"+
+    "<font color='#9000CB'><b>Origen:</b></font>&emsp;"+origenCliente+"<br>"+
+    "<font color='#EAA300'><b>Nucleo:</b></font>&emsp;"+nucleoCliente+"<br>"+
+    "<font color='#9000CB'><b>Programa:</b></font>&emsp;"+programaCliente+"<br>"+
+    "<font color='#EAA300'><b>Asesor:</b></font>&emsp;"+asesorCliente+"<br>"+
+    "<font color='#9000CB'><b>Observaciones:</b></font>&emsp;"+form.observacionesEvento+"<br>";
 
     
     console.log("ESTE ES EL ID DEL VENDEDOR CON ID: "+idVendedor);
@@ -333,8 +351,7 @@ function modifyEvento(form){
       correos = form.correosEvento;
     }
 
-     // Crear el nuevo evento
-     idCalendar = crearEventoCalendar(idCalendarEvento, nombreEvento,fechaInicioEvento,fechaFinEvento,correos,miDescripcion);
+    idCalendar = crearEventoCalendar(idCalendarEvento, nombreEvento,fechaInicioEvento,fechaFinEvento,correos,miDescripcion);
   }
 
   sheetEvento.getRange(filaEvento,2,1,sheetEvento.getLastColumn()-1).setValues([[
@@ -355,10 +372,12 @@ function modifyEvento(form){
     '=VLOOKUP($B'+filaEvento+';tabla_vendedor;15;0)',
     '=VLOOKUP($C'+filaEvento+';tabla_empleado;13;0)',
     '=VLOOKUP($D'+filaEvento+';tabla_cliente;14;0)',
-    '=A'+filaEvento+'&" - "&E'+filaEvento+'&" - "&R'+filaEvento,
+    '=A'+filaEvento+'&"-"&E'+filaEvento+'&"-"&R'+filaEvento,
     idCalendar,
     idPrograma,
-    '=IF($U'+filaEvento+'=0;"0-NO APLICA";VLOOKUP($U'+filaEvento+';tabla_programa;16;0))'
+    '=IF($U'+filaEvento+'=0;"0-NO APLICA";VLOOKUP($U'+filaEvento+';tabla_programa;16;0))',
+    String(fechaCreacion),
+    String(fechaActual)
   ]])
 
   return "Nuevo seguimiento agregado a la base de datos";
@@ -379,6 +398,8 @@ function modifyVenta(form){
   }
 
   const filaVenta = buscarFila(form.idVenta,sheetVenta);
+  var fechaCreacion = sheetVenta.getRange("J"+filaVenta).getValue();
+  fechaCreacion = Utilities.formatDate(fechaCreacion, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
   var idEvento = form.eventoVenta.split('-')[0];
 
   sheetVenta.getRange(filaVenta,2,1,sheetVenta.getLastColumn()-1).setValues([[
@@ -389,7 +410,9 @@ function modifyVenta(form){
     '=VLOOKUP(B'+filaVenta+';tabla_evento;19;0)',
     '=VLOOKUP(B'+filaVenta+';tabla_evento;2;0)',
     '=VLOOKUP($G'+filaVenta+';tabla_vendedor;15;0)',
-    '=VLOOKUP($B'+filaVenta+';tabla_evento;9;0)'
+    '=VLOOKUP($B'+filaVenta+';tabla_evento;9;0)',
+    String(fechaCreacion),
+    String(fechaActual)
   ]]);
 
   return "Registro editado con éxito";
@@ -559,4 +582,26 @@ function sumarDiasFecha(fechaString, dias){
 
   return nuevaFechaString;
 
+}
+
+function reiniciarAppWeb() {
+  // Obtiene la URL de la aplicación web
+  var urlAppWeb = ScriptApp.getService().getUrl();
+  console.log("INGRESÓ A LA APP PARA REINICIAR");
+  console.log(urlAppWeb);
+  console.log(URLactual);
+
+  // Abre la URL en una nueva pestaña del navegador
+  var accionRecargar = UrlFetchApp.fetch(URLactual);
+  Utilities.sleep(2000);
+  console.log("ACA DEBERIA IMPRIMIR EL RESULTADO DE VOLVER A CARGAR LA URL");
+  console.log(accionRecargar);
+}
+
+function recargarApp() {
+  var htmlOutput = HtmlService.createHtmlOutputFromFile('main.html')
+    .setTitle('Telemarketing HNSAS')
+    .setWidth(800)
+    .setHeight(600);
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Título_de_tu_diálogo');
 }
