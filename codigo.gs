@@ -17,6 +17,7 @@ const sheetPrograma = ss.getSheetByName('programa');
 const [headers_programa, ...usersInfo_programa] = sheetPrograma.getDataRange().getDisplayValues();
 const sheetVenta = ss.getSheetByName('venta'); 
 const [headers_venta, ...usersInfo_venta] = sheetVenta.getDataRange().getDisplayValues();
+var listaCelulares = getCelularColumnData();
 
 function doGet() {
   var template = HtmlService.createTemplateFromFile('main');
@@ -42,4 +43,34 @@ function getData(){
   };
 
   return overallDict;
+}
+
+function getCelularColumnData() {
+  
+  // Obtén todos los datos de la hoja
+  var data = sheetPersona.getDataRange().getValues();
+  
+  // Encuentra el índice de la columna 'celular'
+  var header = data[0]; // Asumiendo que la primera fila contiene los encabezados
+  var celularIndex = header.indexOf('celular');
+  
+  // Comprueba si se ha encontrado la columna 'celular'
+  if (celularIndex === -1) {
+    Logger.log('No se encontró la columna "celular".');
+    return;
+  }
+  
+  // Crea una lista para almacenar los valores de la columna 'celular'
+  var celularList = [];
+  
+  // Itera a través de las filas y agrega los valores de la columna 'celular' a la lista
+  for (var i = 1; i < data.length; i++) { // Comienza desde 1 para omitir la fila de encabezado
+    if(data[i][celularIndex]!='NULL'){
+      celularList.push(data[i][celularIndex]);
+    }
+  }
+  
+  // Devuelve la lista de valores de 'celular'
+  Logger.log(celularList);
+  return celularList;
 }
