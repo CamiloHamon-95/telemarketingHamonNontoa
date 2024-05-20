@@ -21,9 +21,23 @@
     var btnEditClient = document.getElementById("btnEditClient");
     var btnEventoLink = document.getElementById("eventoBtn");
 
+    var camposCelular = document.querySelectorAll('.campo-celular');
+
     btnEventoLink.style.color = 'black';
     btnEventoLink.style.backgroundColor = 'yellow';
+
+    /* PENDIENTE DESARROLLO
+
+    // Iterar sobre cada botón para agregar un evento de clic
+    camposCelular.forEach(function(myinput) {
+      myinput.addEventListener('input', function(event) {
+        console.log(event.target.id);
+        console.log(myinput.parentNode);
+      });
+    });
     
+
+    */
 
     var listaEstadosDemo = [
       'VENTA',
@@ -41,6 +55,7 @@
     ];
     var listaEstadosSeguimiento = [
       'ACTIVADO',
+      'EN PROCESO',
       'AGENDADO',
       'RESET',
       'RESET REPROGRAMADO',
@@ -308,6 +323,7 @@
         selectVendedorCliente.value = vendedor;
       }
     });
+    
     // Iterar sobre cada botón para agregar un evento de clic
     botones.forEach(function(boton) {
       boton.addEventListener('click', function(event) {
@@ -366,8 +382,6 @@
       google.script.run
       .withSuccessHandler(object => {
         miUrlUniversal = object['url_implementacion'];
-        console.log("URL UNIVERSAL");
-        console.log(miUrlUniversal);
         delete object.url_implementacion;
         objectInfo = object;
         loadTable(objectInfo);
@@ -476,9 +490,14 @@
         // Modificar la data para incluir el código HTML en la columna "Acciones"
         const newData = usersInfo.map(row => {
           // Aquí debes modificar 'row' según la estructura de tu objeto 'usersInfo'
-          const actionsHTML = '<div id="id-edit-'+key+'-'+row[0]+'"> <i class="bi bi-pencil-square button-edit me-3" role="button" onclick="editarRegistroModal(this,nombreTabla=\''+key+'\')"> Edit</i></div>';
-          const actionLoading = '<div class="spinner-border d-none text-success" id="id-loading-'+key+'-'+row[0]+'" role="status" disabled><span class="sr-only">.</span></div>'
-          row.push(actionsHTML+actionLoading); // Agregar el código HTML a la fila
+          const actionsHTMLeditar = '<div id="id-edit-'+key+'-'+row[0]+'"> <i class="bi bi-pencil-square button-edit me-3" role="button" onclick="editarRegistroModal(this,nombreTabla=\''+key+'\')"></i></div>';
+          const actionLoadingEditar = '<div class="spinner-border d-none text-success" id="id-loading-'+key+'-'+row[0]+'" role="status" disabled><span class="sr-only">.</span></div>'
+          /*
+          const actionsHTMLelimiar = '<div id="id-delete-'+key+'-'+row[0]+'"> <i class="bi bi-trash3-fill" role="button" onclick="eliminarRegistroTabla(this,nombreTabla=\''+key+'\')"></i></div>';
+          const actionLoadingEliminar = '<div class="spinner-border d-none text-success" id="id-loading-delete-'+key+'-'+row[0]+'" role="status" disabled><span class="sr-only">.</span></div>'
+          row.push(actionsHTMLeditar+actionLoadingEditar+" "+actionsHTMLelimiar+actionLoadingEliminar); // Agregar el código HTML a la fila
+          */
+          row.push(actionsHTMLeditar+actionLoadingEditar); // Agregar el código HTML a la fila
           return row;
         });
 
@@ -1065,9 +1084,11 @@
 
     // Función para enviar el formulario de Evento
     function enviarFormEvento() {
+      console.log("HASTA ACÁ BIEN");
       loadingOnOff('btnGuardarEvento','btnLoadingEvento');
       const form = document.getElementById('id-form-crear-evento');
       const idEvento = form.idEvento.value;
+      
       if(idEvento === '0'){
         google.script.run
         .withSuccessHandler(result => {
@@ -1076,26 +1097,30 @@
           window.location.reload();
         })
         .withFailureHandler(error => {
-        // Manejo de la excepción
-        console.error("Se ha producido un error en la función de los eventos: ", error);
-        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
-        alert("Se ha producido un error en la función de los eventos: " + error.message);
+          console.log("HASTA ACÁ BIEN");
+          // Manejo de la excepción
+          console.error("Se ha producido un error en la función de los eventos: ", error);
+          // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+          alert("Se ha producido un error en la función de los eventos: " + error.message);
       })
         .createEvento(form);
       }
       else
       {
+        console.log("HASTA ACÁ BIEN");
         google.script.run
         .withSuccessHandler(result => {
+          console.log("HASTA ACÁ BIEN");
           loadingOnOff('btnGuardarEvento','btnLoadingEvento');
           form.reset();
           window.location.reload();
         })
         .withFailureHandler(error => {
-        // Manejo de la excepción
-        console.error("Se ha producido un error en la función de los eventos: ", error);
-        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
-        alert("Se ha producido un error en la función de los eventos: " + error.message);
+          console.log("HASTA ACÁ BIEN");
+          // Manejo de la excepción
+          console.error("Se ha producido un error en la función de los eventos: ", error);
+          // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+          alert("Se ha producido un error en la función de los eventos: " + error.message);
       })
         .modifyEvento(form);
       }
@@ -1181,6 +1206,23 @@
       })
       .getDataRow(idCliente,'cliente');
     }
+
+    function seleccionarOpcion(selectId, optionValue) {
+      var select = document.getElementById(selectId);
+      for (var i = 0; i < select.options.length; i++) {
+          if (select.options[i].value === optionValue) {
+              select.selectedIndex = i;
+              // Disparar el evento change para simular la acción del usuario
+              var event = new Event('change', {
+                  bubbles: true,
+                  cancelable: true
+              });
+              select.dispatchEvent(event);
+              break;
+          }
+      }
+  }
+
     // Editar registros
     function editarRegistroModal(button, nombreTabla){
 
@@ -1188,11 +1230,17 @@
 
       const tableRow = button.parentNode.parentNode.parentNode;
       var id = tableRow.cells[0].innerHTML;
+      console.log("DATOS PARA LA FUNCION ");
+      console.log(id);
+      console.log(nombreTabla);
       var dataRow;
       loadingOnOffEdit('id-edit-'+nombreTabla+'-'+id,'id-loading-'+nombreTabla+'-'+id);
 
       google.script.run
       .withSuccessHandler(dataRow => {
+
+        console.log("Intento de imprimir el data row");
+        console.log(dataRow);
         var createModal;
       
         switch (nombreTabla) {
@@ -1287,8 +1335,12 @@
             createModal = bootstrap.Modal.getOrCreateInstance('#createModalEvento');
             createModal.show();
 
+            console.log("ACA VOY A IMPRIMIR EL DATAROW");
+            console.log(dataRow[0]);
+
             document.getElementById("idEvento").value = id;
-            document.getElementById("tipoEvento").value = dataRow[0][3];
+            //document.getElementById("tipoEvento").value = dataRow[0][3];
+            seleccionarOpcion('tipoEvento', dataRow[0][3]);
             document.getElementById("estadoEvento").value = dataRow[0][4];
             document.getElementById("resetPersona").value = dataRow[0][5];
             document.getElementById("resetMotivo").value = dataRow[0][6];
@@ -1301,6 +1353,7 @@
             document.getElementById("empleadoEvento").value = dataRow[0][15];
             document.getElementById("clienteEvento").value = dataRow[0][16];
             document.getElementById("programaEvento").value = dataRow[0][20];
+            console.log("HASTA ACÁ BIEN");
             break;
           
           case 'venta':
@@ -1321,9 +1374,54 @@
         loadingOnOffEdit('id-edit-'+nombreTabla+'-'+id,'id-loading-'+nombreTabla+'-'+id);
 
       })
+      .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función editarRegistroModal cuando se edita un registro: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función editarRegistroModal cuando se edita un registro: " + error.message);
+      })
       .getDataRow(id, nombreTabla);
       
     }
+
+    /*
+    function eliminarRegistroTabla(button, nombreTabla){
+
+      const id = button.dataset.usuarioId;
+      console.log("ID DEL BOTON");
+      console.log(id);
+
+      const borrarBoton = document.getElementById('btnEliminarRegistro');
+      borrarBoton.dataset.usuarioId = id;
+      const createModal = bootstrap.Modal.getOrCreateInstance('#createModalEliminar');
+      createModal.show();
+      
+      loadingOnOffEdit('id-delete-'+nombreTabla+'-'+id,'id-loading-delete-'+nombreTabla+'-'+id);
+
+      const tableRow = button.parentNode.parentNode.parentNode;
+      var id = tableRow.cells[0].innerHTML;
+      
+      var createModal = bootstrap.Modal.getOrCreateInstance('#createModalEmpleado');
+      createModal.show();
+      
+      google.script.run
+      .withSuccessHandler(dataRow => {
+        
+        loadingOnOffEdit('id-delete-'+nombreTabla+'-'+id,'id-loading-delete-'+nombreTabla+'-'+id);
+
+      })
+      .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función editarRegistroModal cuando se edita un registro: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función editarRegistroModal cuando se edita un registro: " + error.message);
+      })
+      .otracosa(id, nombreTabla);
+    }
+
+    function clearFormDelete(){
+      const borrarBoton = document.getElementById('btnEliminarRegistro');
+    }*/
 
     function generarReporteExcel(){
       loadingOnOff('id-btn-reporte-excel','id-btn-reporte-excel-loading');
