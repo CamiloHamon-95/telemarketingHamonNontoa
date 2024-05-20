@@ -116,7 +116,7 @@
                       <input type="text" id="nombreEmpleado" name="nombreEmpleado" class="form-control" tabindex="1"><br>
 
                       <label for="celularEmpleado">Celular:</label><br>
-                      <input type="text" id="celularEmpleado" name="celularEmpleado" class="form-control" tabindex="3"><br>
+                      <input type="text" id="celularEmpleado" name="celularEmpleado" class="form-control campo-celular" tabindex="3"><br>
 
                       <label for="ciudadEmpleado">Ciudad:</label><br>
                       <input type="text" id="ciudadEmpleado" name="ciudadEmpleado" class="form-control" tabindex="5"><br>
@@ -179,7 +179,7 @@
                       <input type="text" id="nombreVendedor" name="nombreVendedor" class="form-control" tabindex="1"><br>
 
                       <label for="celularVendedor">Celular:</label><br>
-                      <input type="text" id="celularVendedor" name="celularVendedor" class="form-control" tabindex="3"><br>
+                      <input type="text" id="celularVendedor" name="celularVendedor" class="form-control campo-celular" tabindex="3"><br>
 
                       <label for="departamentoVendedor">Departamento:</label><br>
                       <input type="text" id="departamentoVendedor" name="departamentoVendedor" class="form-control" tabindex="5"><br>
@@ -296,7 +296,7 @@
                   </div>
                   <div>
                       <label for="celularCliente">Celular:</label><br>
-                      <input type="text" id="celularCliente" name="celularCliente" class="form-control" tabindex="1"><br>
+                      <input type="text" id="celularCliente" name="celularCliente" class="form-control campo-celular" tabindex="1"><br>
 
                       <label for="emailCliente">Email:</label><br>
                       <input type="email" id="emailCliente" name="emailCliente" class="form-control" tabindex="4"><br>
@@ -536,6 +536,32 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal ELIMINAR 
+    <div class="modal fade" id="createModalEliminar" tabindex="-1" aria-labelledby="createModalEliminar" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="headerModalEliminar">Eliminar un registro</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>¿Seguro que deseas eliminar este registro?</p>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="1">Cerrar</button>
+            <button type="button" class="btn btn-outline-danger" id="btnEliminarRegistro" tabindex="2">Eliminar definitivamente</button>
+            <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingVenta" disabled>
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span role="status">Eliminando...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    -->
+
 
   </section>
   <footer>
