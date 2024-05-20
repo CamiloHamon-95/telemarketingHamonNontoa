@@ -206,6 +206,7 @@ function modifyPrograma(form){
   //var nombrePrograma = sheetPrograma.getRange("P"+filaPrograma).getValue();
   var nombrePrograma = form.idPrograma + '-PROGRAMA 4 EN 14-'+cliente;
 
+  /*
   // Obtener el ID del eventoCalendar
   var fechaTabla = sheetPrograma.getRange("E"+filaPrograma).getValue();
   // Obtener el día, el mes y el año de la fecha
@@ -219,6 +220,7 @@ function modifyPrograma(form){
   fechaTabla = fechaString+' 10:00';
   console.log("FECHA TABLA");
   console.log(fechaTabla);
+  */
 
   console.log(fechaString); // Output: "05/07/2024"
   var partes = form.fechaPrograma.split("-");
@@ -231,24 +233,22 @@ function modifyPrograma(form){
   console.log(fechaTabla);
   console.log("fecha nueva: ");
   console.log(fechaInicioPrograma);
-  if(fechaTabla != fechaInicioPrograma){
-    // Para ID Calendar vendedor
-    var filaVendedor = buscarFila(idVendedor,sheetVendedor);
-    var idCalendarEvento = sheetVendedor.getRange("Q"+filaVendedor).getValue();
-    //Eliminar el evento para crear uno nuevo
-    console.log("SE VA A ELIMINAR Y A CREAR UN NUEVO EVENTO CALENDAR!!");
-    eliminarEventoCalendario(idCalendarEvento,idCalendar);
-    console.log("ESTE ES EL ID DEL VENDEDOR CON ID: "+idVendedor);
-    console.log(idCalendarEvento);
+  // Para ID Calendar vendedor
+  var filaVendedor = buscarFila(idVendedor,sheetVendedor);
+  var idCalendarEvento = sheetVendedor.getRange("Q"+filaVendedor).getValue();
+  //Eliminar el evento para crear uno nuevo
+  console.log("SE VA A ELIMINAR Y A CREAR UN NUEVO EVENTO CALENDAR!!");
+  eliminarEventoCalendario(idCalendarEvento,idCalendar);
+  console.log("ESTE ES EL ID DEL VENDEDOR CON ID: "+idVendedor);
+  console.log(idCalendarEvento);
 
-    //SUMA DE 14 DÍAS
-    console.log("FECHAS FINALES");
-    var miFechaFin1 = sumarDiasFecha(fechaInicioPrograma,14);
-    var miFechaFin2 = sumarDiasFecha(fechaFinPrograma,14);
+  //SUMA DE 14 DÍAS
+  console.log("FECHAS FINALES");
+  var miFechaFin1 = sumarDiasFecha(fechaInicioPrograma,14);
+  var miFechaFin2 = sumarDiasFecha(fechaFinPrograma,14);
 
-     // Crear el nuevo evento
-     idCalendar = crearEventoCalendar(idCalendarEvento, nombrePrograma,miFechaFin1,miFechaFin2,'','FIN PROGRAMA 4 EN 14');
-  }
+    // Crear el nuevo evento
+    idCalendar = crearEventoCalendar(idCalendarEvento, nombrePrograma,miFechaFin1,miFechaFin2,'','FIN PROGRAMA 4 EN 14');
 
 
   sheetPrograma.getRange(filaPrograma,2,1,sheetPrograma.getLastColumn()-1).setValues([[
@@ -277,6 +277,8 @@ function modifyPrograma(form){
 
 function modifyEvento(form){
 
+  console.log("INGRESA A EDITAR UN EVENTO");
+
   for (var key in form) {
     if (form.hasOwnProperty(key)) { // Verifica si la propiedad pertenece al objeto directamente
       if (form[key] === "") { // Verifica si el valor de la propiedad está vacío
@@ -300,18 +302,14 @@ function modifyEvento(form){
   fechaCreacion = Utilities.formatDate(fechaCreacion, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
   // Obtener el ID del eventoCalendar
   var idCalendar = sheetEvento.getRange("T"+filaEvento).getValue();
-  var fechaTabla = sheetEvento.getRange("L"+filaEvento).getValue();
   var partes = form.fechaEvento.split("-");
   var fechaEventoFormated = partes[1] + "/" + partes[2] + "/" + partes[0];
   var fechaInicioEvento = String(fechaEventoFormated) + ' ' + String(form.horaInicioEvento);
   var fechaFinEvento = String(fechaEventoFormated) + ' ' + String(form.horaFinEvento);
   // Condicional para validar si la fecha fue modificada
-  console.log("COMPARACION DE FECHAS");
-  console.log("fecha tabla: ");
-  console.log(fechaTabla);
   console.log("fecha nueva: ");
   console.log(fechaInicioEvento);
-  if(fechaTabla != fechaInicioEvento && form.tipoEvento.toUpperCase() != 'SEGUIMIENTO'){
+  if(form.tipoEvento.toUpperCase() != 'SEGUIMIENTO'){
     // Para ID Calendar vendedor
     var filaVendedor = buscarFila(idVendedor,sheetVendedor);
     var idCalendarEvento = sheetVendedor.getRange("P"+filaVendedor).getValue();
@@ -351,7 +349,11 @@ function modifyEvento(form){
       correos = form.correosEvento;
     }
 
+    console.log("VA A CREAR UN EVENTO EN CALENDAR!");
+
     idCalendar = crearEventoCalendar(idCalendarEvento, nombreEvento,fechaInicioEvento,fechaFinEvento,correos,miDescripcion);
+  }else{
+    console.log("NO genera evento en calendar porque el evento es de tipo SEGUIMIENTO");
   }
 
   sheetEvento.getRange(filaEvento,2,1,sheetEvento.getLastColumn()-1).setValues([[
@@ -419,6 +421,7 @@ function modifyVenta(form){
 };
 
 function getDataRow(id, nameTable){
+  console.log("SI ENTRA ACÁ!!");
   console.log(nameTable);
   console.log(id);
   var mysheet;
@@ -449,8 +452,6 @@ function getDataRow(id, nameTable){
   var mydata = mysheet.getRange(myfila,2,1,mysheet.getLastColumn()-1).getValues();
   switch (nameTable) {
       case 'evento':
-        console.log("DATA EVENTO");
-        console.log(mydata[0]);
         var estadoEvento = String(mydata[0][3]);
         var fechaEvento = String(mydata[0][10]).split(' ')[0];
         var horaInicioEvento = String(mydata[0][10]).split(' ')[1];
@@ -481,6 +482,10 @@ function getDataRow(id, nameTable){
         mydata[0][7] = fechaEvento;
         mydata[0][8] = horaInicioEvento;
         mydata[0][9] = horaFinEvento;
+        console.log("MY DATA:");
+        console.log(mydata);
+        delete mydata[0][21];
+        delete mydata[0][22];
         break;
       case 'programa':
 
@@ -508,14 +513,21 @@ function getDataRow(id, nameTable){
         fechaPrograma = year+'-'+month+'-'+day;
 
         mydata[0][3] = fechaPrograma;
+        console.log("MY DATA:");
         console.log(mydata);
         delete mydata[0][4];
         delete mydata[0][5];
         delete mydata[0][6];
         delete mydata[0][7];
+        delete mydata[0][17];
+        delete mydata[0][18];
         break;
       case 'venta':
+        console.log("MY DATA:");
+        console.log(mydata);
         delete mydata[0][7];
+        delete mydata[0][8];
+        delete mydata[0][9];
         break;
       default:
         console.log('Caso no tenido en cuenta al eliminar data de EVENTO/PROGRAMA/VENTA');
@@ -550,10 +562,14 @@ function eliminarEventoCalendario(idCalendario, idEvento){
   var evento = calendario.getEventById(idEvento); // Obtén el evento por su ID
   
   if (evento) {
-    evento.deleteEvent(); // Elimina el evento si se encontró
-    Logger.log('Evento eliminado correctamente.');
+    try{
+      evento.deleteEvent(); // Elimina el evento si se encontró
+      console.log('Evento eliminado correctamente.');
+    } catch (error) {
+      console.log('No se encontró el evento con el ID proporcionado.');
+    }
   } else {
-    Logger.log('No se encontró el evento con el ID proporcionado.');
+    console.log('No se encontró el evento con el ID proporcionado.');
   }
 
 }
