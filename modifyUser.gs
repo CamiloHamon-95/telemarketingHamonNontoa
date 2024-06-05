@@ -471,6 +471,11 @@ function getDataRow(id, nameTable){
 
         fechaEvento = year+'-'+month+'-'+day;
 
+        if(horaInicioEvento == undefined || horaFinEvento == undefined){
+          horaInicioEvento = '08:00'
+          horaFinEvento = '08:01'
+        }
+
         if(horaInicioEvento.length === 4){
           horaInicioEvento = '0'+horaInicioEvento;
         }
