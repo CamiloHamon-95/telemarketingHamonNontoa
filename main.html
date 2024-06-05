@@ -33,67 +33,68 @@
 
     <section class="sections-tables" id="empleado-section">
       <h2>Tabla de colaboradores</h2>
-      <div class="text-center spinner-tabla">
+      <div class="text-center spinner-tabla d-none">
         <div class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
-      <table id="tabla-empleado" class="display" style="width:100%">
+
+      <table id="tabla-empleado" class="wait-change-table display" style="width:100%">
       </table>
     </section>
 
     <section class="sections-tables" id="vendedor-section">
       <h2>Tabla de asesores</h2>
-      <div class="text-center spinner-tabla">
+      <div class="text-center spinner-tabla d-none">
         <div class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
-      <table id="tabla-vendedor" class="display" style="width:100%">
+      <table id="tabla-vendedor" class="wait-change-table display" style="width:100%">
       </table>
     </section>
 
     <section class="sections-tables" id="cliente-section">
       <h2>Tabla de clientes</h2>
-      <div class="text-center spinner-tabla">
+      <div class="text-center spinner-tabla d-none">
         <div class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
-      <table id="tabla-cliente" class="display" style="width:100%">
+      <table id="tabla-cliente" class="wait-change-table display" style="width:100%">
       </table>
     </section>
 
     <section class="sections-tables" id="programa-section">
       <h2>Tabla de programas</h2>
-      <div class="text-center spinner-tabla">
+      <div class="text-center spinner-tabla d-none">
         <div class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
-      <table id="tabla-programa" class="display" style="width:100%">
+      <table id="tabla-programa" class="wait-change-table display" style="width:100%">
       </table>
     </section>
 
     <section class="sections-tables" id="evento-section">
       <h2>Tabla de seguimientos</h2>
-      <div class="text-center spinner-tabla">
+      <div class="text-center spinner-tabla d-none">
         <div class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
-      <table id="tabla-evento" class="display" style="width:100%">
+      <table id="tabla-evento" class="wait-change-table display" style="width:100%">
       </table>
     </section>    
 
     <section class="sections-tables" id="venta-section">
       <h2>Tabla de ventas</h2>
-      <div class="text-center spinner-tabla">
+      <div class="text-center spinner-tabla d-none">
         <div class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
-      <table id="tabla-venta" class="display" style="width:100%">
+      <table id="tabla-venta" class="wait-change-table display" style="width:100%">
       </table>
     </section>
 
@@ -401,34 +402,34 @@
                       <input type="text" id="idEvento" name="idEvento" class="form-control id-field" value="0" readonly><br>
 
                       <label for="tipoEvento">Tipo:</label><br>
-                      <select id="tipoEvento" name="tipoEvento" class="form-select" tabindex="2">
+                      <select id="tipoEvento" name="tipoEvento" class="form-select" tabindex="3">
                           <option value="DEMO">DEMO</option>
                           <option value="MANTENIMIENTO">TIENE ROYAL</option>
                           <option value="SEGUIMIENTO" selected>SEGUIMIENTO</option>
                       </select><br>
 
                       <label for="fechaEvento">Fecha:</label><br>
-                      <input type="date" id="fechaEvento" name="fechaEvento" class="form-control" tabindex="4"><br>
+                      <input type="date" id="fechaEvento" name="fechaEvento" class="form-control" tabindex="5"><br>
 
                       <label for="resetPersona" id="label-resetPersona">RESET Persona:</label>
-                      <select id="resetPersona" name="resetPersona" class="form-select" tabindex="7">
+                      <select id="resetPersona" name="resetPersona" class="form-select" tabindex="8">
                           <option value="NO APLICA">NO APLICA</option>
                           <option value="ASESOR">ASESOR</option>
                           <option value="TELE">TELE</option>
                       </select><br>
 
                       <label for="programaEvento">Programa al cual pertenece:</label><br>
-                      <select id="programaEvento" name="programaEvento" class="form-select programa-array" tabindex="9">
+                      <select id="programaEvento" name="programaEvento" class="form-select programa-array">
                       </select><br>
                       
                       <label for="vendedorEvento">Vendedor:</label><br>
-                      <select id="vendedorEvento" name="vendedorEvento" class="form-select vendedor-array" tabindex="11">
+                      <select id="vendedorEvento" name="vendedorEvento" class="form-select vendedor-array">
                       </select><br>
                   </div>
                   <div>
 
                       <div class="divs-input-busqueda">
-                        <label for="clienteEvento">Cliente:</label><input type="text" id="busquedaClienteEvento" placeholder="Buscar...">
+                        <label for="clienteEvento">Cliente:</label><input type="text" id="busquedaClienteEvento" placeholder="Buscar..." tabindex="1">
                         <button type="button" class="btn" onclick="funcionEspecialBtn()" id="btnEditClient" disabled>edit</button>
                         <button class="btn btn-secondary d-none btn-loading" type="button" id="btnLoadingEditClient" disabled>
                           <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
@@ -436,26 +437,26 @@
                         </button>
                         <br>
                       </div>
-                      <select id="clienteEvento" name="clienteEvento" class="form-select cliente-array" tabindex="1">
+                      <select id="clienteEvento" name="clienteEvento" class="form-select cliente-array" tabindex="2">
                       </select><br>
 
                       <label for="estadoEvento">Estado:</label><br>
-                      <select id="estadoEvento" name="estadoEvento" class="form-select estado-evento-array" tabindex="3">
+                      <select id="estadoEvento" name="estadoEvento" class="form-select estado-evento-array" tabindex="4">
                       </select><br>
 
                       <div id="horasEvento">
                         <div>
                           <label for="horaInicioEvento">Inicio:</label><br>
-                          <input type="time" id="horaInicioEvento" name="horaInicioEvento" class="form-control" tabindex="5">
+                          <input type="time" id="horaInicioEvento" name="horaInicioEvento" class="form-control" tabindex="6">
                         </div>
                         <div>
                           <label for="horaFinEvento">Fin:</label><br>
-                          <input type="time" id="horaFinEvento" name="horaFinEvento" class="form-control" tabindex="6">
+                          <input type="time" id="horaFinEvento" name="horaFinEvento" class="form-control" tabindex="7">
                         </div>
                       </div><br>
 
                       <label for="resetMotivo" id="label-resetMotivo">RESET Motivo:</label>
-                      <select id="resetMotivo" name="resetMotivo" class="form-select" tabindex="8">
+                      <select id="resetMotivo" name="resetMotivo" class="form-select" tabindex="9">
                           <option value="NO APLICA">NO APLICA</option>
                           <option value="NO CONTESTA">NO CONTESTA</option>
                           <option value="CLIENTE AUSENTE">CLIENTE AUSENTE</option>
@@ -467,20 +468,20 @@
                       </select><br>
 
                       <label for="empleadoEvento">Telemarketing:</label><br>
-                      <select id="empleadoEvento" name="empleadoEvento" class="form-select empleado-array" tabindex="10">
+                      <select id="empleadoEvento" name="empleadoEvento" class="form-select empleado-array">
                       </select><br>
 
                       <label for="correosEvento">Correos a notificar(separar por coma):</label><br>
-                      <input type="text" id="correosEvento" name="correosEvento" class="form-control" tabindex="12" placeholder="Opcional..."><br>
+                      <input type="text" id="correosEvento" name="correosEvento" class="form-control" placeholder="Opcional..."><br>
                   </div>
               </div>
               <label for="observacionesEvento">Observaciones:</label><br>
-              <textarea id="observacionesEvento" name="observacionesEvento" rows="4" cols="50" class="form-control" style="width: 100%;" tabindex="13"></textarea><br>
+              <textarea id="observacionesEvento" name="observacionesEvento" rows="4" cols="50" class="form-control" style="width: 100%;" tabindex="10"></textarea><br>
           </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="14">Cerrar</button>
-            <button type="button" class="btn btn-primary" onclick="enviarFormEvento()" id="btnGuardarEvento" tabindex="14">Guardar cambios</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="11">Cerrar</button>
+            <button type="button" class="btn btn-primary" onclick="enviarFormEvento()" id="btnGuardarEvento" tabindex="12">Guardar cambios</button>
             <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingEvento" disabled>
               <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
               <span role="status">Actualizando...</span>
@@ -537,7 +538,7 @@
       </div>
     </div>
 
-    <!-- Modal ELIMINAR 
+
     <div class="modal fade" id="createModalEliminar" tabindex="-1" aria-labelledby="createModalEliminar" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -546,13 +547,21 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>¿Seguro que deseas eliminar este registro?</p>
+            <form name="id-form-eliminar-registro" id="id-form-eliminar-registro" action="#" method="post">
+
+              <label class="id-label" for="idBorrar">ID del registro:</label><br>
+              <input type="text" id="idBorrar" name="idBorrar" class="form-control id-field" style="color:white" readonly><br>
+              <label class="id-label" for="nombreTablaBorrar">Nombre de la Tabla:</label><br>
+              <input type="text" id="nombreTablaBorrar" name="nombreTablaBorrar" class="form-control id-field" style="color:white" readonly><br>
+              <p>¿Seguro que deseas eliminar este registro?</p>
+
+            </form>
 
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" tabindex="1">Cerrar</button>
-            <button type="button" class="btn btn-outline-danger" id="btnEliminarRegistro" tabindex="2">Eliminar definitivamente</button>
-            <button class="btn btn-primary d-none btn-loading" type="button" id="btnLoadingVenta" disabled>
+            <button type="button" class="btn btn-outline-danger" id="btnEliminarRegistro" onclick="deleteRow()" tabindex="2">Eliminar definitivamente</button>
+            <button class="btn btn-outline-danger d-none btn-loading" type="button" id="btnLoadingEliminar" disabled>
               <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
               <span role="status">Eliminando...</span>
             </button>
@@ -560,7 +569,6 @@
         </div>
       </div>
     </div>
-    -->
 
 
   </section>
@@ -602,7 +610,8 @@
     </div>
     -->
   </footer>
-
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.js" type="text/Javascript"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js" type="text/Javascript"></script>
   <script src="https://cdn.datatables.net/2.0.6/js/dataTables.js" type="text/Javascript"></script>
