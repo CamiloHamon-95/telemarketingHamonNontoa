@@ -2,6 +2,14 @@ var fechaActual = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 
 
 function createEmpleado(form) {
 
+  if(listaCelulares.includes(form.celularEmpleado)){
+
+    return "El celular ya existe, no se puede crear el registro. Revisa los usuarios creados en el sistema";
+    
+  }else{
+
+  
+
   for (var key in form) {
     if (form.hasOwnProperty(key)) { // Verifica si la propiedad pertenece al objeto directamente
       if (form[key] === "") { // Verifica si el valor de la propiedad está vacío
@@ -27,7 +35,7 @@ function createEmpleado(form) {
       idPersona,
       form.nombreEmpleado.toUpperCase(),
       form.apellidoEmpleado.toUpperCase(),
-      form.celularEmpleado,
+      "'"+String(form.celularEmpleado),
       form.departamentoEmpleado.toUpperCase(),
       form.ciudadEmpleado.toUpperCase(),
       form.direccionEmpleado.toUpperCase(),
@@ -58,6 +66,7 @@ function createEmpleado(form) {
   else
   {
 
+  }
   }
 };
 
@@ -93,7 +102,7 @@ function createVendedor(form){
       idPersona,
       form.nombreVendedor.toUpperCase(),
       form.apellidoVendedor.toUpperCase(),
-      form.celularVendedor,
+      "'"+String(form.celularVendedor),
       form.departamentoVendedor.toUpperCase(),
       form.ciudadVendedor.toUpperCase(),
       form.direccionVendedor.toUpperCase(),
@@ -133,6 +142,12 @@ function createVendedor(form){
 
 function createCliente(form){
 
+  if(listaCelulares.includes(form.celularCliente)){
+
+    return "El celular ya existe, no se puede crear el registro. Revisa los usuarios creados en el sistema";
+    
+  }else{
+
   console.log("SI ENTRA EN LAS FUNCIONES CLIENTE CREATE");
 
   for (var key in form) {
@@ -167,7 +182,7 @@ function createCliente(form){
       idPersona,
       form.nombreCliente.toUpperCase(),
       form.apellidoCliente.toUpperCase(),
-      form.celularCliente,
+      "'"+String(form.celularCliente),
       form.departamentoCliente.toUpperCase(),
       form.ciudadCliente.toUpperCase(),
       form.direccionCliente.toUpperCase(),
@@ -206,6 +221,7 @@ function createCliente(form){
   else
   {
 
+  }
   }
 };
 
