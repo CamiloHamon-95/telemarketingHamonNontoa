@@ -35,7 +35,14 @@ function borrarRegistro(id, nombreTabla) {
       break;
   }
 
+  console.log("ID:");
+  console.log(id);
+  console.log("Nombre Tabla:");
+  console.log(nombreTabla);
+
   var miFila = buscarFila(id,mysheet);
+  console.log("LA FILA");
+  console.log(miFila);
 
   if(listaPersonas.includes(nombreTabla)){
     // DESPUES DE ELIMINAR EL REGISTRO, ELIMINAR LA PERSONA.
@@ -46,10 +53,16 @@ function borrarRegistro(id, nombreTabla) {
 
     if(nombreTabla == 'evento'){
       var idVendedor = mysheet.getRange("B"+miFila).getValue();
+      console.log("VENDEDOR ID");
+      console.log(idVendedor);
       // Para ID Calendar vendedor
       var filaVendedor = buscarFila(idVendedor,sheetVendedor);
+      console.log("FILA VENDEDOR");
+      console.log(filaVendedor);
       // Columna P para el ID del calendar de Eventos
       idCalendarEvento = sheetVendedor.getRange("P"+filaVendedor).getValue();
+      console.log("ID CALENDARIO");
+      console.log(idCalendarEvento);
       //ID calendar
       idCalendar = mysheet.getRange("T"+miFila).getValue();
       console.log("SE VA A ELMINAR EL EVENTO DE:");
