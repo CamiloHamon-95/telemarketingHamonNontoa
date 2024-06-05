@@ -38,8 +38,7 @@ function getData(){
     'vendedor':{headers_vendedor,usersInfo_vendedor},
     'cliente':{headers_cliente, usersInfo_cliente},
     'programa':{headers_programa,usersInfo_programa},
-    'venta':{headers_venta,usersInfo_venta},
-    'url_implementacion':URLactual
+    'venta':{headers_venta,usersInfo_venta}
   };
 
   return overallDict;
@@ -69,8 +68,6 @@ function getCelularColumnData() {
       celularList.push(data[i][celularIndex]);
     }
   }
-  
-  // Devuelve la lista de valores de 'celular'
-  Logger.log(celularList);
+
   return celularList;
 }
