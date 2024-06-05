@@ -1,8 +1,6 @@
 <script defer>
   try {
     var miUrlUniversal = '';
-    
-    retrieveDataSheets();   
 
     var botones = document.querySelectorAll('.btn-main');
     var droplistClientes = document.querySelectorAll('.cliente-array');
@@ -18,26 +16,19 @@
     var fechaPrograma = document.getElementById('fechaPrograma');
     var horaInicioInput = document.getElementById('horaInicioEvento');
     var horaFinInput = document.getElementById('horaFinEvento');
-    var btnEditClient = document.getElementById("btnEditClient");
+    var btnEditClient = document.getElementById('btnEditClient');
     var btnEventoLink = document.getElementById("eventoBtn");
-
     var camposCelular = document.querySelectorAll('.campo-celular');
+    var contenedoresTablas = document.querySelectorAll('.wait-change-table');
+    var dataTableInstances = [];
+    var listaCelulares = [];
+
+    
+
+    retrieveDataSheets();  
 
     btnEventoLink.style.color = 'black';
     btnEventoLink.style.backgroundColor = 'yellow';
-
-    /* PENDIENTE DESARROLLO
-
-    // Iterar sobre cada botón para agregar un evento de clic
-    camposCelular.forEach(function(myinput) {
-      myinput.addEventListener('input', function(event) {
-        console.log(event.target.id);
-        console.log(myinput.parentNode);
-      });
-    });
-    
-
-    */
 
     var listaEstadosDemo = [
       'VENTA',
@@ -48,7 +39,7 @@
     ];
     var listaEstadosMantenimiento = [
       'VENTA',
-      'MNT REALIZADO',
+      '90',
       'EN PROCESO',
       'RESET',
       'RESET REPROGRAMADO'
@@ -59,16 +50,18 @@
       'AGENDADO',
       'RESET',
       'RESET REPROGRAMADO',
+      'ACTIVADO',
       'NO INTERESA',
       'CRP'
     ];
     
-
+  
     sectionsTables.forEach(function(element) {
       element.style.display = 'none';
     });
 
     sectionEventos.style.display = 'block';
+
 
     // Agregar un evento 'change' a cada campo de entrada para detectar cambios
     horaInicioInput.addEventListener("change", function() {
@@ -216,7 +209,7 @@
     var option_select_tipo_eventos = '';
     for (var i = listaEstadosSeguimiento.length - 1; i >= 0; i--) {
       var tipo_evento_value = listaEstadosSeguimiento[i];
-      if(tipo_evento_value == 'RESET'){
+      if(tipo_evento_value == 'EN PROCESO'){
         option_select_tipo_eventos += '<option value="' + tipo_evento_value + '" selected>' + tipo_evento_value + '</option>';
       }else{
         option_select_tipo_eventos += '<option value="' + tipo_evento_value + '">' + tipo_evento_value + '</option>';
@@ -242,7 +235,7 @@
       }
       for (var i = miListaTipoEventos.length - 1; i >= 0; i--) {
           var tipo_evento_value = miListaTipoEventos[i];
-          if(tipo_evento_value == 'RESET'){
+          if(tipo_evento_value == 'EN PROCESO'){
             option_select_tipo_eventos += '<option value="' + tipo_evento_value + '" selected>' + tipo_evento_value + '</option>';
           }else{
             option_select_tipo_eventos += '<option value="' + tipo_evento_value + '">' + tipo_evento_value + '</option>';
@@ -265,13 +258,13 @@
         campoResetMotivo.style.display = 'block';
         campoResetPersona.style.display = 'block';
         labelCampoResetMotivo.style.display = 'block';
-    labelCampoResetPersona.style.display = 'block';
+        labelCampoResetPersona.style.display = 'block';
       }
       else{
         campoResetMotivo.style.display = 'none';
         campoResetPersona.style.display = 'none';
         labelCampoResetMotivo.style.display = 'none';
-    labelCampoResetPersona.style.display = 'none';
+        labelCampoResetPersona.style.display = 'none';
       }
     });
     // ------------------------------------------------------------------------------
@@ -378,11 +371,27 @@
     }
 
     function retrieveDataSheets(){
+
+      contenedoresTablas.forEach(function(element) {
+        if (element.classList.contains("d-none")) {
+          element.classList.remove("d-none");
+        } else {
+          element.classList.add("d-none");
+        }
+      });
+
+
+      spinnerTablas.forEach(function(element) {
+        if (element.classList.contains("d-none")) {
+          element.classList.remove("d-none");
+        } else {
+          element.classList.add("d-none");
+        }
+      });
+
       let objectInfo = {};
       google.script.run
       .withSuccessHandler(object => {
-        miUrlUniversal = object['url_implementacion'];
-        delete object.url_implementacion;
         objectInfo = object;
         loadTable(objectInfo);
         var btnsAgregar = document.querySelectorAll('.btn-agregar-tabla');
@@ -394,6 +403,15 @@
             btnAgregar(nombreTabla);
           });
         });
+
+        contenedoresTablas.forEach(function(element) {
+          if (element.classList.contains("d-none")) {
+            element.classList.remove("d-none");
+          } else {
+            element.classList.add("d-none");
+          }
+        });
+
         spinnerTablas.forEach(function(element) {
           if (element.classList.contains("d-none")) {
             element.classList.remove("d-none");
@@ -401,522 +419,348 @@
             element.classList.add("d-none");
           }
         });
+        
       })
       .getData();
     }
     
 
-    function loadTable ( object ){
-      //Listas
-      var arreglosClientes = object['cliente']['usersInfo_cliente'];
-      var arreglosVendedores = object['vendedor']['usersInfo_vendedor'];
-      var arreglosEmpleados = object['empleado']['usersInfo_empleado'];
-      var arreglosEventos = object['evento']['usersInfo_evento'];
-      var arreglosProgramas = object['programa']['usersInfo_programa'];
-      var option_select_clientes = "";
-      var option_select_vendedores = "";
-      var option_select_empleados = "";
-      var option_select_eventos = "";
-      var option_select_programas = "";
+    function loadTable(object) {
+      const entities = ['cliente', 'vendedor', 'empleado', 'evento', 'programa'];
+      const optionDefaults = {
+          'cliente': '<option value="0-NO APLICA" selected>0-NO APLICA</option>',
+          'programa': '<option value="0-NO APLICA" selected>0-NO APLICA</option>'
+      };
+      const droplistMap = {
+          'cliente': droplistClientes,
+          'vendedor': droplistVendedores,
+          'empleado': droplistEmpleados,
+          'evento': droplistEventos,
+          'programa': droplistProgramas
+      };
+      const lengthThresholds = {
+          'cliente': 13,
+          'vendedor': 14,
+          'empleado': 12,
+          'evento': 18,
+          'programa': 15
+      };
 
-      option_select_clientes = option_select_clientes + '<option value="0-NO APLICA" selected>0-NO APLICA</option>';
-      for (var i = arreglosClientes.length - 1; i >= 0; i--) {
-          var array = arreglosClientes[i];
-          if (array.length >= 13) { 
-              option_select_clientes += '<option value="' + array[13] + '">' + array[13] + '</option>';
-          }
-      }
+      const options = entities.reduce((acc, key) => {
+          let optionsStr = optionDefaults[key] || "";
+          const arreglos = object[key]['usersInfo_' + key];
 
-      arreglosVendedores.forEach(array => {
-        if (array.length >= 14) { 
-            option_select_vendedores = option_select_vendedores + '<option value="'+array[14]+'">' + array[14] + '</option>';
-        }
+          optionsStr += arreglos.reduceRight((str, array) => {
+              const threshold = lengthThresholds[key];
+              if (array.length >= threshold) {
+                  const value = array[threshold];
+                  if(value === '1-1-LAURA-PALACIOS-3112817944'){
+                    return str + `<option value="${value}" selected>${value}</option>`;
+                  }
+                  else
+                  {
+                    return str + `<option value="${value}">${value}</option>`;
+                  }
+              }
+              return str;
+          }, "");
+
+          acc[key] = optionsStr;
+          return acc;
+      }, {});
+      
+      Object.keys(droplistMap).forEach(key => {
+          droplistMap[key].forEach(select => {
+              select.innerHTML = options[key];
+          });
       });
-
-      arreglosEmpleados.forEach(array => {
-        if (array.length >= 12) { 
-            option_select_empleados = option_select_empleados + '<option value="'+array[12]+'">' + array[12] + '</option>';
-        }
-      });
-
-      for (var i = arreglosEventos.length - 1; i >= 0; i--) {
-          var array = arreglosEventos[i];
-          if (array.length >= 18) { 
-              option_select_eventos += '<option value="' + array[18] + '">' + array[18] + '</option>';
-          }
-      }
-
-      option_select_programas = option_select_programas + '<option value="0-NO APLICA" selected>0-NO APLICA</option>';
-
-      for (var i = arreglosProgramas.length - 1; i >= 0; i--) {
-          var array = arreglosProgramas[i];
-          if (array.length >= 15) { 
-              option_select_programas += '<option value="' + array[15] + '">' + array[15] + '</option>';
-          }
-      }
-
-      droplistVendedores.forEach(function(select) {
-        select.innerHTML = option_select_vendedores;
-      });
-      droplistEmpleados.forEach(function(select) {
-        select.innerHTML = option_select_empleados;
-      });
-      droplistClientes.forEach(function(select) {
-        select.innerHTML = option_select_clientes;
-      });
-      droplistEventos.forEach(function(select) {
-        select.innerHTML = option_select_eventos;
-      });
-      droplistProgramas.forEach(function(select) {
-        select.innerHTML = option_select_programas;
-      });
-
+      
       function capitalizeFirstLetter(string) {
           string = string.replaceAll("_", ' ');
           return string.charAt(0).toUpperCase() + string.slice(1);
       }
-      
+
+      var minutosInvertidosTotales = 0;
+
       for (const key in object) {
-        const value = object[key];
-        const headers = value['headers_'+key];
-        const usersInfo = value['usersInfo_'+key];
-        const tableName = '#tabla-'+key;
+          
+          const value = object[key];
+          const headers = value['headers_' + key];
+          const usersInfo = value['usersInfo_' + key];
+          const tableName = '#tabla-' + key;
 
-        const formattedCols = headers.map( header => {
-            header = capitalizeFirstLetter(header);
-            return {'title':header}
+          if(key === 'evento'){
+            // Filtrar los arreglos que en la posición 4 contengan la palabra 'SEGUIMIENTO'
+            var seguimientoUsers = usersInfo.filter(function(user) {
+              return user[4] === 'SEGUIMIENTO';
+            });
+            if(seguimientoUsers.length > 0){
+              var listaFechasEventos = obtenerEventosDelDiaActual(headers,seguimientoUsers);
+              minutosInvertidosTotales =  sumarDiferenciasDeFechas(listaFechasEventos);
+            }
+          }
+
+          const formattedCols = headers.map(header => ({
+              'title': capitalizeFirstLetter(header)
+          }));
+          
+          formattedCols.push({ 'title': 'Acciones' });
+
+          const fechaInicioIndex = headers.indexOf('fecha_inicio');
+          const fechaFinalIndex = headers.indexOf('fecha_fin');
+
+          const newData = usersInfo.map(row => {
+            var actionsHTML;
+
+            if (fechaInicioIndex > -1 && row[fechaInicioIndex]) {
+              // Reformat the date using Moment.js
+              row[fechaInicioIndex] = moment(row[fechaInicioIndex], 'MM/DD/YYYY HH:mm').format('DD [de] MMMM [de] YYYY HH:mm');
+            }
+
+            if (fechaFinalIndex > -1 && row[fechaFinalIndex]) {
+              // Reformat the date using Moment.js
+              row[fechaFinalIndex] = moment(row[fechaFinalIndex], 'MM/DD/YYYY HH:mm').format('DD [de] MMMM [de] YYYY HH:mm');
+            }
+
+            if (tableName.includes('evento') || tableName.includes('venta')) {
+                actionsHTML = `
+                  <div class="td-acciones-crud" id="id-edit-${key}-${row[0]}">
+                      <i class="bi bi-pencil-square button-edit me-3" role="button" onclick="editarRegistroModal(this,nombreTabla='${key}')"></i>
+                  </div>
+                  <div class="spinner-border d-none text-success" id="id-loading-${key}-${row[0]}" role="status" disabled><span class="sr-only"></span></div>
+                  <div id="id-delete-${key}-${row[0]}">
+                      <i class="bi bi-trash3-fill" role="button" onclick="eliminarRegistroTabla(this,nombreTabla='${key}')"></i>
+                  </div>
+                  <div class="spinner-border d-none text-success" id="id-loading-delete-${key}-${row[0]}" role="status" disabled><span class="sr-only"></span></div>
+              `;
+            } else {
+                actionsHTML = `
+                  <div class="td-acciones-crud" id="id-edit-${key}-${row[0]}">
+                      <i class="bi bi-pencil-square button-edit me-3" role="button" onclick="editarRegistroModal(this,nombreTabla='${key}')"></i>
+                  </div>
+                  <div class="spinner-border d-none text-success" id="id-loading-${key}-${row[0]}" role="status" disabled><span class="sr-only"></span></div>
+              `;
+            }
+            row.push(actionsHTML);
+            return row;
           });
-        formattedCols.push({ 'title': 'Acciones' });
-        // Modificar la data para incluir el código HTML en la columna "Acciones"
-        const newData = usersInfo.map(row => {
-          // Aquí debes modificar 'row' según la estructura de tu objeto 'usersInfo'
-          const actionsHTMLeditar = '<div id="id-edit-'+key+'-'+row[0]+'"> <i class="bi bi-pencil-square button-edit me-3" role="button" onclick="editarRegistroModal(this,nombreTabla=\''+key+'\')"></i></div>';
-          const actionLoadingEditar = '<div class="spinner-border d-none text-success" id="id-loading-'+key+'-'+row[0]+'" role="status" disabled><span class="sr-only">.</span></div>'
-          /*
-          const actionsHTMLelimiar = '<div id="id-delete-'+key+'-'+row[0]+'"> <i class="bi bi-trash3-fill" role="button" onclick="eliminarRegistroTabla(this,nombreTabla=\''+key+'\')"></i></div>';
-          const actionLoadingEliminar = '<div class="spinner-border d-none text-success" id="id-loading-delete-'+key+'-'+row[0]+'" role="status" disabled><span class="sr-only">.</span></div>'
-          row.push(actionsHTMLeditar+actionLoadingEditar+" "+actionsHTMLelimiar+actionLoadingEliminar); // Agregar el código HTML a la fila
-          */
-          row.push(actionsHTMLeditar+actionLoadingEditar); // Agregar el código HTML a la fila
-          return row;
-        });
 
-        
-        switch (key) {
-            case 'empleado':
-              var miTable = new DataTable(tableName,{
-                columns: formattedCols,
-                data: newData,
-                language: {
-                    lengthMenu: 'Mostrar _MENU_ registros por página',
-                    zeroRecords: 'Ningún registro encontrado',
-                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                    infoEmpty: 'Ningún registro encontrado',
-                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                    search: 'Buscar:',
-                    loadingRecords: 'Cargando...'
-                },
-                responsive: true,
-                layout: {
-                    topStart: {
-                        buttons: [
+          const tableConfig = {
+              lengthMenu:[25,50],
+              columns: formattedCols,
+              data: newData,
+              language: {
+                  lengthMenu: 'Mostrar _MENU_ registros por página',
+                  zeroRecords: 'Ningún registro encontrado',
+                  info: 'Mostrando de _START_ a _END_ de un total de _TOTAL_ registros',
+                  infoEmpty: 'Ningún registro encontrado',
+                  infoFiltered: '(filtrados desde _MAX_ registros totales)',
+                  loadingRecords: 'Cargando...'
+              },
+              responsive: true,
+              stripeClasses: [],
+              layout: {
+                  topStart: {
+                      buttons: [
                           {
-                            extend:'copy',
-                            text: '<i class="bi bi-clipboard-check-fill"></i>',
-                            titleAttr: 'Copiar',
-                            className: 'btn btn-secondary'
+                              extend: 'copy',
+                              text: '<i class="bi bi-clipboard-check-fill"></i>',
+                              titleAttr: 'Copiar',
+                              className: 'btn btn-secondary'
                           },
                           {
-                            extend:'excel',
-                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
-                            titleAttr: 'Exportar a excel',
-                            className: 'btn btn-success'
+                              extend: 'excel',
+                              text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
+                              titleAttr: 'Exportar a excel',
+                              className: 'btn btn-success'
                           },
                           {
-                            extend:'colvis',
-                            text: 'Columnas',
-                            titleAttr: 'Visibilidad de columnas',
-                            className: 'btn btn-secondary'
+                              extend: 'colvis',
+                              text: 'Columnas',
+                              titleAttr: 'Visibilidad de columnas',
+                              className: 'btn btn-secondary'
                           }
-                        ]
-                    }
-                }
-              });
-              miTable.column(1).visible(false);
-              miTable.column(12).visible(false);
-              
-              break;
-            case 'vendedor':
-              var miTable = new DataTable(tableName,{
-                columns: formattedCols,
-                data: newData,
-                language: {
-                    lengthMenu: 'Mostrar _MENU_ registros por página',
-                    zeroRecords: 'Ningún registro encontrado',
-                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                    infoEmpty: 'Ningún registro encontrado',
-                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                    search: 'Buscar:',
-                    loadingRecords: 'Cargando...'
-                },
-                responsive: true,
-                layout: {
-                    topStart: {
-                        buttons: [
-                          {
-                            extend:'copy',
-                            text: '<i class="bi bi-clipboard-check-fill"></i>',
-                            titleAttr: 'Copiar',
-                            className: 'btn btn-secondary'
-                          },
-                          {
-                            extend:'excel',
-                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
-                            titleAttr: 'Exportar a excel',
-                            className: 'btn btn-success'
-                          },
-                          {
-                            extend:'colvis',
-                            text: 'Columnas',
-                            titleAttr: 'Visibilidad de columnas',
-                            className: 'btn btn-secondary'
-                          }
-                        ]
-                    }
-                }
-              });
-              miTable.column(1).visible(false);
-              miTable.column(12).visible(false);
-              miTable.column(13).visible(false);
-              miTable.column(14).visible(false);
-              miTable.column(15).visible(false);
-              miTable.column(16).visible(false);
-              break;
-            case 'cliente':
-              var miTable = new DataTable(tableName,{
-                columns: formattedCols,
-                data: newData,
-                columnDefs: [
-                    {
-                        targets: 16, // Índice de la columna que deseas modificar
-                        render: function(data, type, row, meta) {
-                            // Aquí puedes modificar los datos de la columna
-                            var nuevoContenido = data.split('-').slice(0, 5).join('-');
-                            return nuevoContenido;
-                        }
-                    },
-                    {
-                        targets: 19, // Índice de otra columna que deseas modificar
-                        render: function(data, type, row, meta) {
-                            // Aquí puedes modificar los datos de la otra columna
-                            var nuevoContenido = data.split('-').slice(0, 7).join('-');
-                            return nuevoContenido;
-                        }
-                    }
-                ],
-                language: {
-                    lengthMenu: 'Mostrar _MENU_ registros por página',
-                    zeroRecords: 'Ningún registro encontrado',
-                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                    infoEmpty: 'Ningún registro encontrado',
-                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                    search: 'Buscar:',
-                    loadingRecords: 'Cargando...'
-                },
-                responsive: true,
-                layout: {
-                    topStart: {
-                        buttons: [
-                          {
-                            extend:'copy',
-                            text: '<i class="bi bi-clipboard-check-fill"></i>',
-                            titleAttr: 'Copiar',
-                            className: 'btn btn-secondary'
-                          },
-                          {
-                            extend:'excel',
-                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
-                            titleAttr: 'Exportar a excel',
-                            className: 'btn btn-success'
-                          },
-                          {
-                            extend:'colvis',
-                            text: 'Columnas',
-                            titleAttr: 'Visibilidad de columnas',
-                            className: 'btn btn-secondary'
-                          }
-                        ]
-                    }
-                },
-                order: [[0, 'desc']]
-              });
-              miTable.column(1).visible(false);
-              miTable.column(2).visible(false);
-              miTable.column(3).visible(false);
-              miTable.column(4).visible(false);
-              miTable.column(11).visible(false);
-              miTable.column(12).visible(false);
-              miTable.column(13).visible(false);
-              miTable.column(15).visible(false);
-              miTable.column(17).visible(false);
-              break;
-            case 'programa':
-              var miTable = new DataTable(tableName,{
-                columns: formattedCols,
-                data: newData,
-                columnDefs: [
-                    {
-                        targets: 14, // Índice de la columna que deseas modificar
-                        render: function(data, type, row, meta) {
-                            // Aquí puedes modificar los datos de la columna
-                            var nuevoContenido = data.split('-').slice(0, 5).join('-');
-                            return nuevoContenido;
-                        }
-                    }
-                ],
-                language: {
-                    lengthMenu: 'Mostrar _MENU_ registros por página',
-                    zeroRecords: 'Ningún registro encontrado',
-                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                    infoEmpty: 'Ningún registro encontrado',
-                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                    search: 'Buscar:',
-                    loadingRecords: 'Cargando...'
-                },
-                responsive: true,
-                layout: {
-                    topStart: {
-                        buttons: [
-                          {
-                            extend:'copy',
-                            text: '<i class="bi bi-clipboard-check-fill"></i>',
-                            titleAttr: 'Copiar',
-                            className: 'btn btn-secondary'
-                          },
-                          {
-                            extend:'excel',
-                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
-                            titleAttr: 'Exportar a excel',
-                            className: 'btn btn-success'
-                          },
-                          {
-                            extend:'colvis',
-                            text: 'Columnas',
-                            titleAttr: 'Visibilidad de columnas',
-                            className: 'btn btn-secondary'
-                          }
-                        ]
-                    }
-                },
-                order: [[0, 'desc']]
-              });
-              miTable.column(1).visible(false);
-              miTable.column(2).visible(false);
-              miTable.column(3).visible(false);
-              miTable.column(5).visible(false);
-              miTable.column(6).visible(false);
-              miTable.column(7).visible(false);
-              miTable.column(15).visible(false);
-              miTable.column(16).visible(false);
-              miTable.column(18).visible(false);
-              miTable.column(19).visible(false);
-              break;
-            case 'evento':
-              var miTable = new DataTable(tableName,{
-                columns: formattedCols,
-                data: newData,
-                columnDefs: [
-                    {
-                        targets: 17, // Índice de la columna que deseas modificar
-                        render: function(data, type, row, meta) {
-                            // Aquí puedes modificar los datos de la columna
-                            var nuevoContenido = data.split('-').slice(0, 5).join('-');
-                            return nuevoContenido;
-                        }
-                    },
-                    {
-                        targets: 21, // Índice de otra columna que deseas modificar
-                        render: function(data, type, row, meta) {
-                            // Aquí puedes modificar los datos de la otra columna
-                            var nuevoContenido = data.split('-').slice(0, 7).join('-');
-                            return nuevoContenido;
-                        }
-                    }
-                ],
-                language: {
-                    lengthMenu: 'Mostrar _MENU_ registros por página',
-                    zeroRecords: 'Ningún registro encontrado',
-                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                    infoEmpty: 'Ningún registro encontrado',
-                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                    search: 'Buscar:',
-                    loadingRecords: 'Cargando...'
-                },
-                responsive: true,
-                layout: {
-                    topStart: {
-                        buttons: [
-                          {
-                            extend:'copy',
-                            text: '<i class="bi bi-clipboard-check-fill"></i>',
-                            titleAttr: 'Copiar',
-                            className: 'btn btn-secondary'
-                          },
-                          {
-                            extend:'excel',
-                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
-                            titleAttr: 'Exportar a excel',
-                            className: 'btn btn-success'
-                          },
-                          {
-                            extend:'colvis',
-                            text: 'Columnas',
-                            titleAttr: 'Visibilidad de columnas',
-                            className: 'btn btn-secondary'
-                          }
-                        ]
-                    }
-                },
-                order: [[0, 'desc']],
-                
-                createdRow: function(row, data, dataIndex) {
-
-                  switch (data[5]) {
-                    case 'NO INTERESA':
-                      $(row).addClass('color-no-interesa');
-                      break;
-                    case 'RESET REPROGRAMADO':
-                      $(row).addClass('color-reset-repre-rr');
-                      break;
-                    case 'VENTA':
-                      $(row).addClass('color-venta');
-                      break;
-                    case '90':
-                      $(row).addClass('color-no-venta');
-                      break;
-                    case 'CRP':
-                      $(row).addClass('color-crp');
-                      break;
-                    case 'EN PROCESO':
-                      $(row).addClass('color-en-proceso');
-                      break;
-                    case 'RESET':
-                      if (data[6] == 'TELE') {
-                        $(row).addClass('color-reset-tele');
-                      }else if(data[6] == 'ASESOR'){
-                        $(row).addClass('color-reset-repre-rr');
+                    ],
+                  },
+                  topEnd: function () {
+                      let toolbar = document.createElement('div');
+                      toolbar.style.marginRight = '5rem';
+                      if(minutosInvertidosTotales < 100){
+                        toolbar.innerHTML = '<b>Actual:</b> '+minutosInvertidosTotales+' min // <b>Meta:</b> 100 min';
+                      }else{
+                        toolbar.innerHTML = '<b>Actual:</b> '+minutosInvertidosTotales+' min // <b>Meta:</b> 100 min. Lo Lograste!! 😎 🎉 Felicidades 🌹 Gracias por tu compromiso.';
                       }
-                      else{}
-                      break;
-                    default:
-                      // Código que se ejecutará si ninguna de las opciones coincide
-                      break;
-                  }
-                }
-              });
-              miTable.column(1).visible(false);
-              miTable.column(2).visible(false);
-              miTable.column(3).visible(false);
-              miTable.column(8).visible(false);
-              miTable.column(9).visible(false);
-              miTable.column(10).visible(false);
-              miTable.column(13).visible(false);
-              miTable.column(16).visible(false);
-              miTable.column(18).visible(false);
-              miTable.column(19).visible(false);
-              miTable.column(20).visible(false);
-              miTable.column(22).visible(false);
-              miTable.column(23).visible(false);
-              break;
-            case 'venta':
-              var miTable = new DataTable(tableName,{
-                columns: formattedCols,
-                data: newData,
-                columnDefs: [
-                    {
-                        targets: 5, // Índice de la columna que deseas modificar
-                        render: function(data, type, row, meta) {
-                            // Aquí puedes modificar los datos de la columna
-                            var nuevoContenido = data.split('-').slice(0, 7).join('-');
-                            return nuevoContenido;
-                        }
+                      
+          
+                      return toolbar;
                     }
-                ],
-                language: {
-                    lengthMenu: 'Mostrar _MENU_ registros por página',
-                    zeroRecords: 'Ningún registro encontrado',
-                    info: 'Monstrando de _START_ a _END_ de un total de _TOTAL_ registros',
-                    infoEmpty: 'Ningún registro encontrado',
-                    infofFiltered: '(filtrados desde _MAX_ registros totales)',
-                    search: 'Buscar:',
-                    loadingRecords: 'Cargando...'
-                },
-                responsive: true,
-                layout: {
-                    topStart: {
-                        buttons: [
-                          {
-                            extend:'copy',
-                            text: '<i class="bi bi-clipboard-check-fill"></i>',
-                            titleAttr: 'Copiar',
-                            className: 'btn btn-secondary'
-                          },
-                          {
-                            extend:'excel',
-                            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
-                            titleAttr: 'Exportar a excel',
-                            className: 'btn btn-success'
-                          },
-                          {
-                            extend:'colvis',
-                            text: 'Columnas',
-                            titleAttr: 'Visibilidad de columnas',
-                            className: 'btn btn-secondary'
-                          }
-                        ]
-                    }
-                },
-                order: [[0, 'desc']]
-              });
-              miTable.column(1).visible(false);
-              miTable.column(6).visible(false);
-              miTable.column(9).visible(false);
-              miTable.column(10).visible(false);
+                  
+              },
               
-              break;
-            default:
-              break;
-        }
-      }
-      listaNombreTablas = ['empleado','vendedor','cliente','evento','programa','venta'];
-      // Iterar sobre la lista e imprimir cada elemento
-      listaNombreTablas.forEach(function(nombreTabla) {
-          elementNombreTabla = '[aria-controls="tabla-'+nombreTabla+'"]';
-          var botonesDt = document.querySelectorAll(elementNombreTabla);
-          // Verificar si se encontraron elementos
-          if (botonesDt.length > 0) {
-              // Tomar el primer elemento como referencia para el padre común
-              var padreComun = botonesDt[0].parentNode;
+              initComplete: function () {
+                this.api()
+                    .columns()
+                    .every(function () {
+                        let column = this;
+                        let title = column.header().textContent;
+        
+                        // Create input element
+                        let input = document.createElement('input');
+                        input.placeholder = title;
+                        //column.header().replaceChildren(input);
+                        column.header().appendChild(input);
 
-              // Verificar si se encontró un padre común
-              if (padreComun !== null) {
-                // Crear el botón fuera de la configuración de DataTables
-                var botonAgregar = document.createElement('button');
-                botonAgregar.textContent = '+ Add';
-                botonAgregar.className = 'btn btn-agregar-tabla btn-warning buttons-html5';
-                botonAgregar.id = 'btn-agregar-'+nombreTabla;
-                botonAgregar.setAttribute('data-bs-toggle', 'modal');
-                // Agregar el botón a donde desees en tu página botonesDataTable
-                var nombreModal =  '#createModal'+ nombreTabla.charAt(0).toUpperCase() + nombreTabla.slice(1);
-                botonAgregar.setAttribute('data-bs-target',nombreModal);
-                botonAgregar.onclick = btnAgregar(nombreTabla);
-                padreComun.appendChild(botonAgregar.cloneNode(true));
-              } else {
+                        let columnWidth = $(column.header()).width();
+                        $(input).css('min-width', '20px').css('width', '100%');
+                        
+
+                        // Event listener for user input
+                        input.addEventListener('click', function(event) {
+                            event.stopPropagation();
+                        });
+
+                        input.addEventListener('keyup', () => {
+                            if (column.search() !== this.value) {
+                                column.search(input.value).draw();
+                            }
+                        });
+                    });
               }
-          } else {
+              
+              
+          };
+          
+
+          const additionalConfigs = {
+              'empleado': {
+                  columnVisibility: [1, 12]
+              },
+              'vendedor': {
+                  columnVisibility: [1, 12, 13, 14, 15, 16]
+              },
+              'cliente': {
+                  columnDefs: [
+                      {
+                          targets: 16,
+                          render: data => data.split('-').slice(0, 5).join('-')
+                      },
+                      {
+                          targets: 19,
+                          render: data => data.split('-').slice(0, 7).join('-')
+                      }
+                  ],
+                  columnVisibility: [1, 2, 3, 4, 11, 12, 13, 15, 17],
+                  order: [[0, 'desc']]
+              },
+              'programa': {
+                  columnDefs: [
+                      {
+                          targets: 14,
+                          render: data => data.split('-').slice(0, 5).join('-')
+                      }
+                  ],
+                  columnVisibility: [1, 2, 3, 5, 6, 7, 15, 16, 18, 19],
+                  order: [[0, 'desc']]
+              },
+              'evento': {
+                  columnDefs: [
+                      {
+                          targets: 17,
+                          render: data => data.split('-').slice(0, 5).join('-')
+                      },
+                      {
+                          targets: 21,
+                          render: data => data.split('-').slice(0, 7).join('-')
+                      }
+                  ],
+                  columnVisibility: [1, 2, 3, 8, 9, 10, 13, 16, 18, 19, 20, 22, 23],
+                  order: [[8, 'desc']],
+                  createdRow: function (row, data) {
+                      const statusMap = {
+                          'NO INTERESA': 'color-no-interesa',
+                          'RESET REPROGRAMADO': 'color-reset-repre-rr',
+                          'VENTA': 'color-venta',
+                          '90': 'color-no-venta',
+                          'CRP': 'color-crp',
+                          'EN PROCESO': 'color-en-proceso',
+                          'RESET': data[6] === 'TELE' ? 'color-reset-tele' : data[6] === 'ASESOR' ? 'color-reset-repre-rr' : ''
+                      };
+                      const rowClass = statusMap[data[5]] || '';
+                      if (rowClass) $(row).addClass(rowClass);
+                  }
+              },
+              'venta': {
+                  columnDefs: [
+                      {
+                          targets: 5,
+                          render: data => data.split('-').slice(0, 7).join('-')
+                      }
+                  ],
+                  columnVisibility: [1, 6, 9, 10],
+                  order: [[0, 'desc']]
+              }
+          };
+
+          const config = additionalConfigs[key] || {};
+          Object.assign(tableConfig, config);
+
+          const miTable = new DataTable(tableName, tableConfig);
+          dataTableInstances.push(miTable);
+
+          // Agrega la clase 'pinta-acciones' a la última celda de cada fila después de que se haya inicializado la tabla
+          miTable.on('draw.dt', function() {
+            miTable.rows().every(function() {
+                var row = this.node();
+                $(row).find('td:last').addClass('pinta-acciones');
+            });
+          });
+          
+          miTable.rows().every(function() {
+              var row = this.node();
+              $(row).find('td:last').addClass('pinta-acciones');
+          });
+
+          if (config.columnVisibility) {
+              config.columnVisibility.forEach(index => miTable.column(index).visible(false));
+          }
+      }
+
+      const listaNombreTablas = ['empleado', 'vendedor', 'cliente', 'evento', 'programa', 'venta'];
+
+      listaNombreTablas.forEach(nombreTabla => {
+          const elementNombreTabla = `[aria-controls="tabla-${nombreTabla}"]`;
+          const botonesDt = document.querySelectorAll(elementNombreTabla);
+          if (botonesDt.length > 0) {
+              const padreComun = botonesDt[0].parentNode;
+              if (padreComun !== null) {
+                  const botonAgregar = document.createElement('button');
+                  botonAgregar.textContent = '+ Add';
+                  botonAgregar.className = 'btn btn-agregar-tabla btn-warning buttons-html5';
+                  botonAgregar.id = 'btn-agregar-' + nombreTabla;
+                  botonAgregar.setAttribute('data-bs-toggle', 'modal');
+                  const nombreModal = '#createModal' + nombreTabla.charAt(0).toUpperCase() + nombreTabla.slice(1);
+                  botonAgregar.setAttribute('data-bs-target', nombreModal);
+                  botonAgregar.onclick = () => btnAgregar(nombreTabla);
+                  padreComun.appendChild(botonAgregar.cloneNode(true));
+              }
           }
       });
-    };
+
+    /*
+    var accionesBtns = document.querySelectorAll('.td-acciones-crud');
+    // Recorre cada elemento y cambia el estilo de su elemento padre
+      accionesBtns.forEach(elemento => {
+          const padre = elemento.parentElement;
+          if (padre) {
+              padre.style.display = 'flex';
+              padre.style.fontSize = '2rem';
+              padre.style.justifyContent = 'space-evenly';
+          }
+      });
+      */
+    }
+    
+
 
     // Función para enviar el formulario de empleado
     function enviarFormEmpleado() {
@@ -926,14 +770,17 @@
       if(idEmpleado === '0'){
         google.script.run
         .withSuccessHandler(result => {
-          loadingOnOff('btnGuardarEmpleado','btnLoadingEmpleado');
-          form.reset();
-          window.location.reload();
-          /*
-          console.log('URL UNIVERSAL');
-          console.log(miUrlUniversal);
-          window.open(miUrlUniversal, '_top');
-          */
+          console.log(result);
+          if(result.includes('celular')){
+            alert("No se puede crear el registro porque ya existe un usuario con el número " + String(form.celularEmpleado));
+            loadingOnOff('btnGuardarEmpleado','btnLoadingEmpleado');
+          }
+          else{
+            loadingOnOff('btnGuardarEmpleado','btnLoadingEmpleado');
+            form.reset();
+            actualizarTablaGrafica('#createModalEmpleado');
+          }
+          
         })
         .withFailureHandler(error => {
           // Manejo de la excepción
@@ -949,7 +796,7 @@
         .withSuccessHandler(result => {
           loadingOnOff('btnGuardarEmpleado','btnLoadingEmpleado');
           form.reset();
-          window.location.reload();
+          actualizarTablaGrafica('#createModalEmpleado');
         })
         .withFailureHandler(error => {
         // Manejo de la excepción
@@ -972,7 +819,7 @@
         .withSuccessHandler(result => {
           loadingOnOff('btnGuardarVendedor','btnLoadingVendedor');
           form.reset();
-          window.location.reload();
+          actualizarTablaGrafica('#createModalVendedor');
         })
         .withFailureHandler(error => {
         // Manejo de la excepción
@@ -988,7 +835,7 @@
         .withSuccessHandler(result => {
           loadingOnOff('btnGuardarVendedor','btnLoadingVendedor');
           form.reset();
-          window.location.reload();
+          actualizarTablaGrafica('#createModalVendedor');
         })
         .withFailureHandler(error => {
         // Manejo de la excepción
@@ -1001,6 +848,35 @@
       }
     }
 
+    /*
+    function guardarCerrarFormCliente() {
+      loadingOnOff('btnGuardarCerrarCliente','btnLoadingGuardarCerrarCliente');
+      const form = document.getElementById('id-form-crear-cliente');
+      const flagEditClient = document.getElementById('flag-edit-client');
+      const idCliente = form.idCliente.value;
+      google.script.run
+      .withSuccessHandler(result => {
+        console.log(result);
+        if(result.includes('celular')){
+          alert("No se puede crear el registro porque ya existe un usuario con el número " + String(form.celularEmpleado));
+          loadingOnOff('btnGuardarCliente','btnLoadingCliente');
+        }
+        else{
+          loadingOnOff('btnGuardarCerrarCliente','btnLoadingGuardarCerrarCliente');
+          form.reset();
+        }
+      })
+      .withFailureHandler(error => {
+      // Manejo de la excepción
+      console.error("Se ha producido un error en la función de los clientes: ", error);
+      // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+      alert("Se ha producido un error en la función de los clientes: " + error.message);
+      })
+      .createCliente(form);
+    }
+
+    */
+
     // Función para enviar el formulario de cliente
     function enviarFormCliente() {
       loadingOnOff('btnGuardarCliente','btnLoadingCliente');
@@ -1010,8 +886,15 @@
       if(idCliente === '0'){
         google.script.run
         .withSuccessHandler(result => {
-          loadingOnOff('btnGuardarCliente','btnLoadingCliente');
-          form.reset();
+          console.log(result);
+          if(result.includes('celular')){
+            alert("No se puede crear el registro porque ya existe un usuario con el número " + String(form.celularEmpleado));
+            loadingOnOff('btnGuardarCliente','btnLoadingCliente');
+          }
+          else{
+            loadingOnOff('btnGuardarCliente','btnLoadingCliente');
+            form.reset();
+          }
         })
         .withFailureHandler(error => {
         // Manejo de la excepción
@@ -1028,7 +911,7 @@
           loadingOnOff('btnGuardarCliente','btnLoadingCliente');
           if(flagEditClient == 'false'){
             form.reset();
-            window.location.reload();
+            actualizarTablaGrafica('#createModalCliente');
           }else{
             createModal = bootstrap.Modal.getOrCreateInstance('#createModalCliente');
             createModal.hide();
@@ -1054,7 +937,7 @@
         .withSuccessHandler(result => {
           loadingOnOff('btnGuardarPrograma','btnLoadingPrograma');
           form.reset();
-          window.location.reload();
+          actualizarTablaGrafica('#createModalPrograma');
         })
         .withFailureHandler(error => {
         // Manejo de la excepción
@@ -1070,7 +953,7 @@
         .withSuccessHandler(result => {
           loadingOnOff('btnGuardarPrograma','btnLoadingPrograma');
           form.reset();
-          window.location.reload();
+          actualizarTablaGrafica('#createModalPrograma');
         })
         .withFailureHandler(error => {
         // Manejo de la excepción
@@ -1084,7 +967,6 @@
 
     // Función para enviar el formulario de Evento
     function enviarFormEvento() {
-      console.log("HASTA ACÁ BIEN");
       loadingOnOff('btnGuardarEvento','btnLoadingEvento');
       const form = document.getElementById('id-form-crear-evento');
       const idEvento = form.idEvento.value;
@@ -1094,10 +976,9 @@
         .withSuccessHandler(result => {
           loadingOnOff('btnGuardarEvento','btnLoadingEvento');
           form.reset();
-          window.location.reload();
+          actualizarTablaGrafica('#createModalEvento');
         })
         .withFailureHandler(error => {
-          console.log("HASTA ACÁ BIEN");
           // Manejo de la excepción
           console.error("Se ha producido un error en la función de los eventos: ", error);
           // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
@@ -1107,16 +988,13 @@
       }
       else
       {
-        console.log("HASTA ACÁ BIEN");
         google.script.run
         .withSuccessHandler(result => {
-          console.log("HASTA ACÁ BIEN");
-          loadingOnOff('btnGuardarEvento','btnLoadingEvento');
           form.reset();
-          window.location.reload();
+          loadingOnOff('btnGuardarEvento','btnLoadingEvento');
+          actualizarTablaGrafica('#createModalEvento');
         })
         .withFailureHandler(error => {
-          console.log("HASTA ACÁ BIEN");
           // Manejo de la excepción
           console.error("Se ha producido un error en la función de los eventos: ", error);
           // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
@@ -1136,7 +1014,7 @@
         .withSuccessHandler(result => {
           loadingOnOff('btnGuardarVenta','btnLoadingVenta');
           form.reset();
-          window.location.reload();
+          actualizarTablaGrafica('#createModalVenta');
         })
         .withFailureHandler(error => {
         // Manejo de la excepción
@@ -1152,7 +1030,7 @@
         .withSuccessHandler(result => {
           loadingOnOff('btnGuardarVenta','btnLoadingVenta');
           form.reset();
-          window.location.reload();
+          actualizarTablaGrafica('#createModalVenta');
         })
         .withFailureHandler(error => {
         // Manejo de la excepción
@@ -1162,6 +1040,16 @@
       })
         .modifyVenta(form);
       }
+    }
+
+    function actualizarTablaGrafica(nombreModal){
+      for (var i = 0; i < dataTableInstances.length; i++){
+        dataTableInstances[i].destroy();
+      }
+      dataTableInstances = [];
+      retrieveDataSheets();
+      const createModal = bootstrap.Modal.getOrCreateInstance(nombreModal);
+      createModal.hide();
     }
 
     function funcionEspecialBtn(){
@@ -1230,17 +1118,11 @@
 
       const tableRow = button.parentNode.parentNode.parentNode;
       var id = tableRow.cells[0].innerHTML;
-      console.log("DATOS PARA LA FUNCION ");
-      console.log(id);
-      console.log(nombreTabla);
       var dataRow;
       loadingOnOffEdit('id-edit-'+nombreTabla+'-'+id,'id-loading-'+nombreTabla+'-'+id);
 
       google.script.run
       .withSuccessHandler(dataRow => {
-
-        console.log("Intento de imprimir el data row");
-        console.log(dataRow);
         var createModal;
       
         switch (nombreTabla) {
@@ -1320,8 +1202,6 @@
           case 'programa':
             createModal = bootstrap.Modal.getOrCreateInstance('#createModalPrograma');
             createModal.show();
-            console.log("FECHA DEL PROGRAMA");
-            console.log(dataRow[0]);
             document.getElementById("idPrograma").value = id;
             document.getElementById("fechaPrograma").value = dataRow[0][3];
             document.getElementById("clientePrograma").value = dataRow[0][13];
@@ -1334,9 +1214,6 @@
 
             createModal = bootstrap.Modal.getOrCreateInstance('#createModalEvento');
             createModal.show();
-
-            console.log("ACA VOY A IMPRIMIR EL DATAROW");
-            console.log(dataRow[0]);
 
             document.getElementById("idEvento").value = id;
             //document.getElementById("tipoEvento").value = dataRow[0][3];
@@ -1353,7 +1230,6 @@
             document.getElementById("empleadoEvento").value = dataRow[0][15];
             document.getElementById("clienteEvento").value = dataRow[0][16];
             document.getElementById("programaEvento").value = dataRow[0][20];
-            console.log("HASTA ACÁ BIEN");
             break;
           
           case 'venta':
@@ -1384,26 +1260,26 @@
       
     }
 
-    /*
+  
     function eliminarRegistroTabla(button, nombreTabla){
 
-      const id = button.dataset.usuarioId;
-      console.log("ID DEL BOTON");
-      console.log(id);
+      tableRow = button.parentNode.parentNode.parentNode;
+      var id = tableRow.cells[0].innerHTML;
 
       const borrarBoton = document.getElementById('btnEliminarRegistro');
-      borrarBoton.dataset.usuarioId = id;
       const createModal = bootstrap.Modal.getOrCreateInstance('#createModalEliminar');
       createModal.show();
-      
-      loadingOnOffEdit('id-delete-'+nombreTabla+'-'+id,'id-loading-delete-'+nombreTabla+'-'+id);
 
-      const tableRow = button.parentNode.parentNode.parentNode;
-      var id = tableRow.cells[0].innerHTML;
-      
-      var createModal = bootstrap.Modal.getOrCreateInstance('#createModalEmpleado');
-      createModal.show();
-      
+      document.getElementById("idBorrar").value = id;
+      if(nombreTabla === 'evento'){
+        document.getElementById("nombreTablaBorrar").value = 'SEGUIMIENTOS';
+      }else if(nombreTabla === 'vendedor'){
+        document.getElementById("nombreTablaBorrar").value = 'ASESORES';
+      }
+      else{
+        document.getElementById("nombreTablaBorrar").value = nombreTabla.toUpperCase();
+      }
+      /*
       google.script.run
       .withSuccessHandler(dataRow => {
         
@@ -1417,11 +1293,42 @@
         alert("Se ha producido un error en la función editarRegistroModal cuando se edita un registro: " + error.message);
       })
       .otracosa(id, nombreTabla);
+      */
     }
 
-    function clearFormDelete(){
-      const borrarBoton = document.getElementById('btnEliminarRegistro');
-    }*/
+    function deleteRow(){
+      
+      const form = document.getElementById('id-form-eliminar-registro');
+      var id = form.idBorrar.value;
+      var nombreTabla = form.nombreTablaBorrar.value;
+
+      if(nombreTabla === 'SEGUIMIENTOS'){
+        nombreTabla = 'evento';
+      }else if(nombreTabla === 'ASESORES'){
+        nombreTabla = 'vendedor';
+      }
+      else{
+        nombreTabla = nombreTabla.toLowerCase();
+      }
+
+
+      loadingOnOffEdit('btnEliminarRegistro','btnLoadingEliminar');
+      
+      google.script.run
+      .withSuccessHandler(result => {
+        loadingOnOffEdit('btnEliminarRegistro','btnLoadingEliminar');
+        form.reset();
+        window.location.reload();
+      })
+      .withFailureHandler(error => {
+        // Manejo de la excepción
+        console.error("Se ha producido un error en la función de eliminar registros: ", error);
+        // Aquí puedes mostrar un mensaje de error al usuario, por ejemplo:
+        alert("Se ha producido un error en la función de eliminar registros: " + error.message);
+      })
+      .borrarRegistro(id, nombreTabla);
+      
+    }
 
     function generarReporteExcel(){
       loadingOnOff('id-btn-reporte-excel','id-btn-reporte-excel-loading');
@@ -1451,8 +1358,68 @@
       fechaPrograma.value = obtenerFechaActual();
       fechaInput.value = obtenerFechaActual();
       horaInicioInput.value = obtenerHoraActual(0);
-      horaFinInput.value = obtenerHoraActual(4);
+      horaFinInput.value = obtenerHoraActual(2);
     };
+
+    function obtenerEventosDelDiaActual(headers,data) {
+
+      const fechaInicioIndex = headers.indexOf('fecha_inicio');
+      const fechaFinIndex = headers.indexOf('fecha_fin');
+
+      // Obtener la fecha actual en formato MM/DD/YYYY
+      const hoy = new Date();
+      const mes = ('0' + (hoy.getMonth() + 1)).slice(-2);
+      const dia = ('0' + hoy.getDate()).slice(-2);
+      const anio = hoy.getFullYear();
+      const fechaActual = mes + '/' + dia + '/' + anio;
+
+      // Filtrar y mapear los datos a un array de objetos
+      const eventos = data.slice(1).filter(row => {
+        const fechaInicio = new Date(row[fechaInicioIndex]);
+        const fechaInicioStr = (fechaInicio.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                              fechaInicio.getDate().toString().padStart(2, '0') + '/' +
+                              fechaInicio.getFullYear();
+        return fechaInicioStr === fechaActual;
+      }).map(row => {
+        return {
+          fecha_inicio: row[fechaInicioIndex],
+          fecha_fin: row[fechaFinIndex]
+        };
+      });
+
+      return eventos;
+    }
+
+
+    function sumarDiferenciasDeFechas(eventos) {
+
+      // Obtener la fecha actual en el formato MM/DD/YYYY
+      var hoy = new Date();
+      var mes = ('0' + (hoy.getMonth() + 1)).slice(-2);
+      var dia = ('0' + hoy.getDate()).slice(-2);
+      var anio = hoy.getFullYear();
+      var fechaActual = mes + '/' + dia + '/' + anio;
+
+      // Filtrar eventos con la fecha del día actual
+      var eventosFiltrados = eventos.filter(function(evento) {
+        var fechaInicio = new Date(evento.fecha_inicio);
+        var fechaFin = new Date(evento.fecha_fin);
+        var fechaInicioStr = (fechaInicio.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                            fechaInicio.getDate().toString().padStart(2, '0') + '/' +
+                            fechaInicio.getFullYear();
+        return fechaInicioStr === fechaActual;
+      });
+
+      // Calcular la sumatoria de las diferencias en minutos
+      var totalMinutos = eventosFiltrados.reduce(function(suma, evento) {
+        var fechaInicio = new Date(evento.fecha_inicio);
+        var fechaFin = new Date(evento.fecha_fin);
+        var diferenciaMinutos = (fechaFin - fechaInicio) / (1000 * 60);
+        return suma + diferenciaMinutos;
+      }, 0);
+
+      return totalMinutos;
+    }
 
   } catch (error) {
     // Manejo de la excepción
