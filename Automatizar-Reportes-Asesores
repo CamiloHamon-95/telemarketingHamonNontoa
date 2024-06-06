@@ -1,0 +1,170 @@
+function copyFilteredData() {
+
+  // Función para eliminar y reordenar columnas
+  function processColumns(data, columnsToKeep) {
+    return data.map(function(row) {
+      return columnsToKeep.map(function(colIndex) {
+        return row[colIndex - 1];
+      });
+    });
+  }
+
+  // Función para modificar los valores de una columna específica
+  function modifyColumn(data, colIndex) {
+    return data.map(function(row) {
+      if (row[colIndex - 1] !== undefined) {
+
+        var cell = row[colIndex - 1];
+        var modifiedCell = '';
+        
+        if(colIndex === 18) // MODIFICAR VALORES DEL CLIENTE
+        {
+
+          modifiedCell = cell.split('-').slice(2,5).join('-');
+        }
+        if(colIndex === 22) // MODIFICAR VALORES DEL PROGRAMA
+        {
+          modifiedCell = 'PRG 4 EN 14 de '+cell.split('-').slice(4,7).join('-');
+        }
+        if((colIndex === 12 || colIndex === 13)&& !cell.includes('fecha')) // MODIFICAR VALORES DEL PROGRAMA
+        {
+          modifiedCell = convertirFecha(String(cell));
+        }
+
+        row[colIndex - 1] = modifiedCell; // Ejemplo de modificación
+      }
+      return row;
+    });
+  }
+
+  var columnsToKeepAndReorder = [1, 22, 18, 5, 6, 7, 8, 12 ,13, 15];
+
+  var dataAsesores = {
+    'marisol':[1,'156IzV8eLK7CHg2ASYv5f6nAw9jCaJS4vEkTvErPr46M'],
+    'milton':[2,'13dSwcw6j6VsBNITFeiUOZ3_INwjZHGUgWdGpm98Dm7s'],
+    'yesid':[3,'1l-eFjd1D3Rv14N2B8AOw-LvdFd7YC_ITCfGvekbI_0w'],
+    'brayan':[4,'1qyL9G3-mToTgCDCrldYs5wJ3WQOp9TAOgfXD-8AMbwA']
+  };
+  // IDs de las hojas de cálculo (cambia estos IDs por los de tus documentos)
+  var sourceSpreadsheetId = '1-Ajhs5Zrdlk-OTewYC3bVi0A-HhuihENJRhngtv0zZQ';
+
+  // Nombres de las hojas (cambia estos nombres por los de tus hojas)
+  var sourceSheetName = 'evento';
+  var destinationSheetName = 'reporte';
+
+  // Rango y columna de filtrado
+  var filterColumnIndex = 2; // Columna A es la 1
+
+  // Abre la hoja de cálculo de origen y obtiene la hoja
+  var sourceSpreadsheet = SpreadsheetApp.openById(sourceSpreadsheetId);
+  var sourceSheet = sourceSpreadsheet.getSheetByName(sourceSheetName);
+
+  // Obtiene todos los datos de la hoja de origen
+  var data = sourceSheet.getDataRange().getValues();
+
+  // Extrae los encabezados
+  var headers = data[0];
+
+  // Procesa los datos y los encabezados
+  var processedHeaders = processColumns([headers], columnsToKeepAndReorder)[0];
+
+  data = modifyColumn(data, 12);
+  data = modifyColumn(data, 13);
+  data = modifyColumn(data, 18);
+  data = modifyColumn(data, 22);
+
+  for (var key in dataAsesores) {
+    if (dataAsesores.hasOwnProperty(key)) {
+      var idAsesor = dataAsesores[key][0];
+      var idSheet = dataAsesores[key][1];
+      // Filtra los datos
+      var filteredData = data.filter(function(row) {
+        return row[filterColumnIndex - 1] === idAsesor;
+      });
+
+      var processedData = processColumns(filteredData.slice(1), columnsToKeepAndReorder);
+
+      // Incluye los encabezados en los datos filtrados
+      processedData.unshift(processedHeaders);
+      // Abre la hoja de cálculo de destino y obtiene la hoja
+      var destinationSpreadsheet = SpreadsheetApp.openById(idSheet);
+      var destinationSheet = destinationSpreadsheet.getSheetByName(destinationSheetName);
+
+      // Borra el contenido actual de la hoja de destino (opcional)
+      destinationSheet.clear();
+
+      // Pega los datos filtrados en la hoja de destino
+      if (processedData.length > 0) {
+        destinationSheet.getRange(1, 1, processedData.length, processedData[0].length).setValues(processedData);
+        var range = destinationSheet.getDataRange();
+        var numRows = range.getNumRows();
+        var numColumns = range.getNumColumns();
+        // Resalta las filas que contienen el valor filtrado
+        for (var i = 1; i < processedData.length; i++) {
+          if (processedData[i][4] === 'NO INTERESA') {
+            destinationSheet.getRange(i + 1, 1, 1, processedData[i].length).setBackground('#FFA500');
+          }
+          else if(processedData[i][4] === 'RESET REPROGRAMADO') {
+            destinationSheet.getRange(i + 1, 1, 1, processedData[i].length).setBackground('#f0e68c');
+          }
+          else if(processedData[i][4] === 'VENTA') {
+            destinationSheet.getRange(i + 1, 1, 1, processedData[i].length).setBackground('#FFFF00');
+          }
+          else if(processedData[i][4] === '90') {
+            destinationSheet.getRange(i + 1, 1, 1, processedData[i].length).setBackground('#add8e6');
+          }
+          else if(processedData[i][4] === 'CRP') {
+            destinationSheet.getRange(i + 1, 1, 1, processedData[i].length).setBackground('#99A3A4');
+          }
+          else if(processedData[i][4] === 'EN PROCESO') {
+            destinationSheet.getRange(i + 1, 1, 1, processedData[i].length).setBackground('#FF6240');
+          }
+          else if(processedData[i][5] === 'TELE') {
+            destinationSheet.getRange(i + 1, 1, 1, processedData[i].length).setBackground('#d8bfd8');
+          }
+          else if(processedData[i][5] === 'ASESOR') {
+            destinationSheet.getRange(i + 1, 1, 1, processedData[i].length).setBackground('#f0e68c');
+          }
+
+        }
+        //Colorear filas y ajustar columnas
+        destinationSheet.setRowHeights(1, 1, 100);
+        destinationSheet.getRange(1, 1, 1, processedData[0].length).setFontColor('#ffffff');
+        destinationSheet.getRange(1, 1, 1, processedData[0].length).setFontWeight("bold");
+        destinationSheet.getRange(1, 1, 1, processedData[0].length).setBackground('#1A5276');
+        destinationSheet.getRange(1, 1, 1, processedData[0].length).setHorizontalAlignment("center");
+        destinationSheet.getRange(1, 1, 1, processedData[0].length).setVerticalAlignment("middle");
+        destinationSheet.getRange(1, 10, destinationSpreadsheet.getLastRow(), 1).setWrap(true); // Ajusta el texto al tamaño de la celda
+        if (processedData.length > 1){
+          destinationSheet.getRange(2, 1, numRows - 1, numColumns).sort({column: 1, ascending: false});
+        }
+      }
+
+    }
+  }
+}
+
+function convertirFecha(fechaStr) {
+  
+  // Parsear la fecha y hora del string
+  var partes = fechaStr.split(' ');
+  var fechaPartes = partes[0].split('/');
+  var horaPartes = partes[1].split(':');
+  
+  var mes = parseInt(fechaPartes[0], 10);
+  var dia = parseInt(fechaPartes[1], 10);
+  var year = parseInt(fechaPartes[2], 10);
+  var hora = horaPartes[0];
+  var minuto = horaPartes[1];
+  
+  // Meses en español
+  var meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  
+  // Crear el nuevo formato de fecha
+  var nuevoFormato = dia + ' de ' + meses[mes - 1] + ' del ' + year + ' ' + hora + ':' + minuto;
+  
+  // Mostrar el resultado
+  return String(nuevoFormato);  // Debería mostrar '30 de abril del 2024 12:14'
+}
+
+
