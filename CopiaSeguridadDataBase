@@ -1,0 +1,33 @@
+function hacerCopiaDiaria() {
+  // ID del archivo de Google Sheets que deseas copiar
+  var idArchivoOrigen = '1-Ajhs5Zrdlk-OTewYC3bVi0A-HhuihENJRhngtv0zZQ';
+
+  // ID de la carpeta de destino en Google Drive
+  var idCarpetaDestino = '1Zuq0MoyjJhNnXlunC7VkBWBiNGI3u_vc';
+
+  // Obtener el archivo de Google Sheets original
+  var archivoOrigen = DriveApp.getFileById(idArchivoOrigen);
+
+  // Crear una copia del archivo original en la misma carpeta
+  var copiaArchivo = archivoOrigen.makeCopy();
+
+  // Obtener la carpeta de destino en Google Drive
+  var carpetaDestino = DriveApp.getFolderById(idCarpetaDestino);
+  
+  // Establecer el nombre de la copia con la fecha actual
+  var fechaActual = new Date();
+  var nombreCopia = 'Copia_DatabaseHamonNontoa_' + Utilities.formatDate(fechaActual, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  copiaArchivo.setName(nombreCopia);
+
+  // Mover la copia del archivo a la misma carpeta que el original
+  copiaArchivo.moveTo(carpetaDestino);
+}
+
+// Programar la ejecución del script una vez al día
+function programarCopiaDiaria() {
+  ScriptApp.newTrigger('hacerCopiaDiaria')
+      .timeBased()
+      .atHour(0) // Hora a la que deseas que se realice la copia (por ejemplo, a medianoche)
+      .everyDays(1) // Frecuencia diaria
+      .create();
+}
